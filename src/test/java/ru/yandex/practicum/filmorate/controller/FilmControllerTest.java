@@ -17,10 +17,12 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import org.springframework.test.annotation.DirtiesContext;
 
 @AutoConfigureMockMvc
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test")
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 class FilmControllerTest {
     public static final String PATH = "/films";
     @Autowired
