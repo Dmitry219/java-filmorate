@@ -81,11 +81,11 @@ class UserControllerTest {
                 ));
     }
 
-    private String getContentFromFilm(String filename){
+    private String getContentFromFilm(String filename) {
         try {
             return Files.readString(ResourceUtils.getFile("classpath:" + filename).toPath(),
                     StandardCharsets.UTF_8);
-        }catch (IOException e){
+        } catch (IOException e) {
             return "";
         }
     }
