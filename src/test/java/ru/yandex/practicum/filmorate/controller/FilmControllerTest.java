@@ -118,7 +118,7 @@ class FilmControllerTest {
         film.setReleaseDate(LocalDate.of(1890, 03,25));
 
         Exception exception = Assertions.assertThrows(ValidationException.class, () ->
-        {validator.validate(film);});
+        validator.validate(film));
 
         String expectedMessage = "Старая дата релиза фильма!";
         String actualMessage = exception.getMessage();
