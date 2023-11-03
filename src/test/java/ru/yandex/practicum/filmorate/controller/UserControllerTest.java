@@ -12,7 +12,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.util.ResourceUtils;
-import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.model.Validator;
 import ru.yandex.practicum.filmorate.service.UserService;
@@ -210,8 +209,7 @@ class UserControllerTest {
                 "Друг не добавилен!");
 
         userService.getMutualFriends(user1.getId(), user2.getId());
-        Assertions.assertEquals(user , userService.getMutualFriends(user2.getId(), user1.getId()).get(0),
-                "Общие друзья не найдены!");
+        Assertions.assertEquals(user, userService.getMutualFriends(user2.getId(), user1.getId()).get(0), "Общие друзья не найдены!");
     }
 
     private String getContentFromFilm(String filename) {
