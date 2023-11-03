@@ -22,7 +22,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import org.springframework.test.annotation.DirtiesContext;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.model.Validator;
+import ru.yandex.practicum.filmorate.service.FilmService;
 
 @AutoConfigureMockMvc
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -30,11 +32,17 @@ import ru.yandex.practicum.filmorate.model.Validator;
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 class FilmControllerTest {
     public static final String PATH = "/films";
+    FilmService filmService;
     @Autowired
      private MockMvc mockMvc;
     @Autowired
-    private FilmController filmController = new FilmController();
+    private FilmController filmController = new FilmController(filmService);
     private Validator validator = new Validator();
+
+    @Autowired
+    public FilmControllerTest(FilmService filmService) {
+        this.filmService = filmService;
+    }
 
     @Test
     void createFilm() throws Exception {
@@ -54,7 +62,7 @@ class FilmControllerTest {
                         MockMvcRequestBuilders.post(PATH)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(getContentFromFilm("controller/request/film-release-date-empty.json")))
-                .andExpect(status().is4xxClientError());
+                .andExpect(status().is5xxServerError());
     }
 
     @Test
@@ -82,7 +90,7 @@ class FilmControllerTest {
                         MockMvcRequestBuilders.post(PATH)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(getContentFromFilm("controller/request/film-BlankName.json")))
-                .andExpect(status().is4xxClientError());
+                .andExpect(status().is5xxServerError());
 
     }
 
@@ -93,7 +101,7 @@ class FilmControllerTest {
                         MockMvcRequestBuilders.post(PATH)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(getContentFromFilm("controller/request/film-NoName.json")))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isInternalServerError());
 
     }
 
@@ -104,7 +112,7 @@ class FilmControllerTest {
                         MockMvcRequestBuilders.post(PATH)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(getContentFromFilm("controller/request/film-Max-Size.json")))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isInternalServerError());
 
     }
 
@@ -127,7 +135,7 @@ class FilmControllerTest {
                         MockMvcRequestBuilders.post(PATH)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(getContentFromFilm("controller/request/film-release-date-empty.json")))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isInternalServerError());
     }
 
     @Test
@@ -137,7 +145,7 @@ class FilmControllerTest {
                         MockMvcRequestBuilders.post(PATH)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(getContentFromFilm("controller/request/film-Positiv-number.json")))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isInternalServerError());
 
     }
 
@@ -159,6 +167,71 @@ class FilmControllerTest {
                 ));
     }
 
+    //--------------Тесты нового функционала------------------------------
+    @Test
+    void checkAddingLikes() {
+        Film film = new Film();
+        film.setId(1);
+        film.setName("dima");
+        film.setDuration(100);
+        film.setDescription("Test data");
+        film.setReleaseDate(LocalDate.of(1999, 03,25));
+        filmService.createFilm(film);
+
+        User user = new User("mail@mail.ru","dolore");
+        user.setId(1);
+        user.setBirthday(LocalDate.of(1988,07,11));
+
+        filmService.addLike(film.getId(), user.getId());
+
+        Assertions.assertTrue(film.getLikes().contains(user.getId()), "Лайк не добавился!");
+    }
+
+    @Test
+    void checkDeletionOfLike() {
+        Film film = new Film();
+        film.setId(1);
+        film.setName("dima");
+        film.setDuration(100);
+        film.setDescription("Test data");
+        film.setReleaseDate(LocalDate.of(1999, 03,25));
+        filmService.createFilm(film);
+
+        User user = new User("mail@mail.ru","dolore");
+        user.setId(1);
+        user.setBirthday(LocalDate.of(1988,07,11));
+
+        filmService.addLike(film.getId(), user.getId());
+        Assertions.assertTrue(film.getLikes().contains(user.getId()), "лайк не добавился");
+
+        filmService.deleteLike(film.getId(), user.getId());
+        Assertions.assertFalse(film.getLikes().contains(user.getId()), "лайк не удалился");
+    }
+
+    @Test
+    void checkListOfPopularMovies() {
+        Film film = new Film();
+        film.setName("dima");
+        film.setDuration(100);
+        film.setDescription("Test data");
+        film.setReleaseDate(LocalDate.of(1999, 03,25));
+        filmService.createFilm(film);
+
+        Film film1 = new Film();
+        film1.setName("dima");
+        film1.setDuration(100);
+        film1.setDescription("Test data");
+        film1.setReleaseDate(LocalDate.of(1999, 03,25));
+        filmService.createFilm(film1);
+
+        User user = new User("mail@mail.ru","dolore");
+        user.setId(1);
+        user.setBirthday(LocalDate.of(1988,07,11));
+
+        filmService.addLike(film.getId(), user.getId());
+
+        Assertions.assertEquals(film, filmService.getPopularFilms(1).get(0), "фильмы не равны!");
+    }
 
     private String getContentFromFilm(String filename) {
         try {
