@@ -1,0 +1,23 @@
+[
+  {
+    "id": 1,
+    "email": "mail@mail.ru",
+    "login": "dolore",
+    "name": "dolore",
+    "birthday": "1988-07-11"
+  },
+  {
+    "id": 2,
+    "email": "mailNd@mail.ru",
+    "login": "qqqqqqq",
+    "name": "qqqqqqq",
+    "birthday": "2000-11-11"
+  },
+  {
+    "id": 3,
+    "email": "mailDs@mail.ru",
+    "login": "wwwwww",
+    "name": "wwwwww",
+    "birthday": "1999-05-05"
+  }
+]

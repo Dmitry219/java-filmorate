@@ -12,8 +12,9 @@ import java.util.List;
 
 @RestController
 @Slf4j
+@RequestMapping("/users")
 public class UserController {
-    UserService userService;
+    private final UserService userService;
 
     @Autowired
     public UserController(UserService userService) {
@@ -21,27 +22,20 @@ public class UserController {
     }
 
     //список всех users
-    @GetMapping("/users")
+    @GetMapping
     public List<User> getUsers() {
         return userService.getUsers();
     }
 
     //вернуть user по id
-    @GetMapping(value = "/users/{userId}")
+    @GetMapping(value = "/{userId}")
     public User getUserById(@PathVariable int userId) {
         checkId(userId);
         return userService.objectSearchUser(userId);
     }
 
-    // ?????????????????????
-    /*@GetMapping(value = "/users/{userId}/friends/{friendId}")
-    public User getfriendByIdUser(@PathVariable int userId, @PathVariable int friendId) {
-        userService.getOfFriendsOfASpecificUser()
-        return userService.objectSearchUser(userId);
-    }*/
-
     //добавление в друзья
-    @PutMapping(value = "/users/{id}/friends/{friendId}")
+    @PutMapping(value = "/{id}/friends/{friendId}")
     public void addFriends(@PathVariable int id, @PathVariable int friendId) {
         checkId(id);
         checkId(friendId);
@@ -49,7 +43,7 @@ public class UserController {
     }
 
     //удаление из друзей
-    @DeleteMapping(value = "/users/{id}/friends/{friendId}")
+    @DeleteMapping(value = "/{id}/friends/{friendId}")
     public void deleteFriends(@PathVariable int id, @PathVariable int friendId) {
         checkId(id);
         checkId(friendId);
@@ -57,14 +51,14 @@ public class UserController {
     }
 
     //возвращаем список пользователей, являющихся его друзьями.
-    @GetMapping(value = "/users/{id}/friends")
+    @GetMapping(value = "/{id}/friends")
     public List<User> getOfFriendsOfASpecificUser(@PathVariable int id) {
         checkId(id);
         return userService.getOfFriendsOfASpecificUser(id);
     }
 
     //список друзей, общих с другим пользователем
-    @GetMapping(value = "/users/{id}/friends/common/{otherId}")
+    @GetMapping(value = "/{id}/friends/common/{otherId}")
     public List<User> getListOfFriendsSharedWithAnotherUser(@PathVariable int id,
                                                              @PathVariable int otherId) {
         checkId(id);
@@ -73,7 +67,7 @@ public class UserController {
     }
 
     //создание пользователя
-    @PostMapping(value = "/users")
+    @PostMapping
     public User createUser(@Valid @RequestBody User user) {
         userService.createUser(user);
         log.info("Получили пользователя {}", user);
@@ -81,7 +75,7 @@ public class UserController {
     }
 
     //обновление пользователя
-    @PutMapping(value = "/users")
+    @PutMapping
     public User updateUser(@Valid @RequestBody User user) {
 
         checkId(user.getId());
@@ -91,7 +85,7 @@ public class UserController {
     }
 
     //удаление user
-    @DeleteMapping(value = "/users/{userId}")
+    @DeleteMapping(value = "/{userId}")
     public void deleteFilm(@PathVariable int userId) {
         checkId(userId);
 
@@ -99,7 +93,7 @@ public class UserController {
     }
 
     //проверка id  ( > 0) и (user существует с такми id)
-    public void checkId(int id) {
+    private void checkId(int id) {
         if (id <= 0) {
             throw new RuntimeException("Id не может быть меньше нуля или равен нулю!");
         } else if (userService.objectSearchUser(id).equals(null)) {

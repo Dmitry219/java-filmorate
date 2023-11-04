@@ -1,6 +1,7 @@
 package ru.yandex.practicum.filmorate.controller;
 
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -32,16 +33,36 @@ import ru.yandex.practicum.filmorate.service.FilmService;
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 class FilmControllerTest {
     public static final String PATH = "/films";
-    FilmService filmService;
     @Autowired
-     private MockMvc mockMvc;
+    private MockMvc mockMvc;
     @Autowired
-    private FilmController filmController = new FilmController(filmService);
+    private FilmController filmController;
+    @Autowired
+    private FilmService filmService;
     private Validator validator = new Validator();
+    Film film;
+    Film film1;
+    User user;
 
-    @Autowired
-    public FilmControllerTest(FilmService filmService) {
-        this.filmService = filmService;
+    @BeforeEach
+    void create() {
+        film = new Film();
+        film.setName("dima");
+        film.setDuration(100);
+        film.setDescription("Test data");
+        film.setReleaseDate(LocalDate.of(1999, 03,25));
+        filmService.createFilm(film);
+
+        film1 = new Film();
+        film1.setName("aaaa");
+        film1.setDuration(151);
+        film1.setDescription("Test data");
+        film1.setReleaseDate(LocalDate.of(2000, 03,25));
+        filmService.createFilm(film1);
+
+        user = new User("mail@mail.ru","dolore");
+        user.setId(1);
+        user.setBirthday(LocalDate.of(1988,07,11));
     }
 
     @Test
@@ -118,11 +139,6 @@ class FilmControllerTest {
 
     @Test
     void validateFilmNegativeDateLimit() throws Exception {
-        Film film = new Film();
-        film.setId(1);
-        film.setName("dima");
-        film.setDuration(100);
-        film.setDescription("Test data");
         film.setReleaseDate(LocalDate.of(1890, 03,25));
 
         Exception exception = Assertions.assertThrows(ValidationException.class, () -> validator.validate(film));
@@ -153,54 +169,24 @@ class FilmControllerTest {
     void getFilms() throws Exception {
 
         mockMvc.perform(
-                        MockMvcRequestBuilders.post(PATH)
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content(getContentFromFilm("controller/request/filmGet.json")))
-                .andExpect(status().isOk());
-
-        mockMvc.perform(
                         MockMvcRequestBuilders.get(PATH)
                                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(MockMvcResultMatchers.content().json(
-                        getContentFromFilm("controller/response/filmGet.json")
+                        getContentFromFilm("controller/response/filmsGet.json")
                 ));
     }
 
     //--------------Тесты нового функционала------------------------------
     @Test
-    void checkAddingLikes() {
-        Film film = new Film();
-        film.setId(1);
-        film.setName("dima");
-        film.setDuration(100);
-        film.setDescription("Test data");
-        film.setReleaseDate(LocalDate.of(1999, 03,25));
-        filmService.createFilm(film);
-
-        User user = new User("mail@mail.ru","dolore");
-        user.setId(1);
-        user.setBirthday(LocalDate.of(1988,07,11));
-
+    void addingLikesTrue() {
         filmService.addLike(film.getId(), user.getId());
 
         Assertions.assertTrue(film.getLikes().contains(user.getId()), "Лайк не добавился!");
     }
 
     @Test
-    void checkDeletionOfLike() {
-        Film film = new Film();
-        film.setId(1);
-        film.setName("dima");
-        film.setDuration(100);
-        film.setDescription("Test data");
-        film.setReleaseDate(LocalDate.of(1999, 03,25));
-        filmService.createFilm(film);
-
-        User user = new User("mail@mail.ru","dolore");
-        user.setId(1);
-        user.setBirthday(LocalDate.of(1988,07,11));
-
+    void deletionOfLikeFalse() {
         filmService.addLike(film.getId(), user.getId());
         Assertions.assertTrue(film.getLikes().contains(user.getId()), "лайк не добавился");
 
@@ -209,25 +195,7 @@ class FilmControllerTest {
     }
 
     @Test
-    void checkListOfPopularMovies() {
-        Film film = new Film();
-        film.setName("dima");
-        film.setDuration(100);
-        film.setDescription("Test data");
-        film.setReleaseDate(LocalDate.of(1999, 03,25));
-        filmService.createFilm(film);
-
-        Film film1 = new Film();
-        film1.setName("dima");
-        film1.setDuration(100);
-        film1.setDescription("Test data");
-        film1.setReleaseDate(LocalDate.of(1999, 03,25));
-        filmService.createFilm(film1);
-
-        User user = new User("mail@mail.ru","dolore");
-        user.setId(1);
-        user.setBirthday(LocalDate.of(1988,07,11));
-
+    void getListFilmsPopularEqualsTrue() {
         filmService.addLike(film.getId(), user.getId());
 
         Assertions.assertEquals(film, filmService.getPopularFilms(1).get(0), "фильмы не равны!");

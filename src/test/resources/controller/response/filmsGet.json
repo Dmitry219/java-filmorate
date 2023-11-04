@@ -1,0 +1,16 @@
+[
+  {
+    "id": 1,
+    "name": "dima",
+    "description": "Test data",
+    "releaseDate": "1999-03-25",
+    "duration": 100
+  },
+  {
+    "id": 2,
+    "name": "aaaa",
+    "description": "Test data",
+    "releaseDate": "2000-03-25",
+    "duration": 151
+  }
+]

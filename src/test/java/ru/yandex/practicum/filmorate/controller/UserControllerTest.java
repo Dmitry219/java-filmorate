@@ -1,6 +1,7 @@
 package ru.yandex.practicum.filmorate.controller;
 
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -13,7 +14,6 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.util.ResourceUtils;
 import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.model.Validator;
 import ru.yandex.practicum.filmorate.service.UserService;
 
 import java.io.IOException;
@@ -31,14 +31,27 @@ class UserControllerTest {
     public static final String PATH = "/users";
     @Autowired
     private MockMvc mockMvc;
-    UserService userService;
     @Autowired
-    UserController userController = new UserController(userService);
-    private Validator validator;
+    private UserService userService;
+    @Autowired
+    private UserController userController;
+    User user;
+    User user1;
+    User user2;
 
-    @Autowired
-    public UserControllerTest(UserService userService) {
-        this.userService = userService;
+    @BeforeEach
+    void create() {
+        user = new User("mail@mail.ru","dolore");
+        user.setBirthday(LocalDate.of(1988,07,11));
+        userService.createUser(user);
+
+        user1 = new User("mailNd@mail.ru","qqqqqqq");
+        user1.setBirthday(LocalDate.of(2000,11,11));
+        userService.createUser(user1);
+
+        user2 = new User("mailDs@mail.ru","wwwwww");
+        user2.setBirthday(LocalDate.of(1999,05,05));
+        userService.createUser(user2);
     }
 
     @Test
@@ -82,18 +95,13 @@ class UserControllerTest {
 
     @Test
     void getUsers() throws Exception {
-        mockMvc.perform(
-                        MockMvcRequestBuilders.post(PATH)
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content(getContentFromFilm("controller/request/userGet.json")))
-                .andExpect(status().isOk());
 
         mockMvc.perform(
                         MockMvcRequestBuilders.get(PATH)
                                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(MockMvcResultMatchers.content().json(
-                        getContentFromFilm("controller/response/userGet.json")
+                        getContentFromFilm("controller/response/usersGet.json")
                 ));
     }
 
@@ -133,12 +141,10 @@ class UserControllerTest {
 
     @Test
     void validateUserCopyOfLogin() {
-        User user = new User("mail@mail.ru","dolore");
-        user.setId(1);
-        user.setBirthday(LocalDate.of(1988,07,11));
-
-        Assertions.assertNull(user.getName());
-        userService.createUser(user);
+        User user3 = new User("mail@mail.ru","dolore");
+        user3.setBirthday(LocalDate.of(1988,07,11));
+        Assertions.assertNull(user3.getName());
+        userService.createUser(user3);
 
         Assertions.assertEquals(user.getLogin(), user.getName(), "Лоигн не скопировался в имя!");
     }
@@ -155,15 +161,7 @@ class UserControllerTest {
 
     //--------------------Тесты нового функционала------------------------
     @Test
-    void checkAddingFriends() {
-        User user = new User("mail@mail.ru","dolore");
-        user.setBirthday(LocalDate.of(1988,07,11));
-        userService.createUser(user);
-
-        User user1 = new User("mailNd@mail.ru","qqqqqqq");
-        user.setBirthday(LocalDate.of(2000,11,11));
-        userService.createUser(user1);
-
+    void addFriendsTrue() {
         userService.addFriends(user.getId(), user1.getId());
 
         Assertions.assertTrue(userService.objectSearchUser(user.getId()).getFriends().contains(user1.getId()),
@@ -171,16 +169,9 @@ class UserControllerTest {
     }
 
     @Test
-    void checkDeletionOfFriends() {
-        User user = new User("mail@mail.ru","dolore");
-        user.setBirthday(LocalDate.of(1988,07,11));
-        userService.createUser(user);
-
-        User user1 = new User("mailNd@mail.ru","qqqqqqq");
-        user.setBirthday(LocalDate.of(2000,11,11));
-        userService.createUser(user1);
-
+    void deleteFriendsFalse() {
         userService.addFriends(user.getId(), user1.getId());
+
         Assertions.assertTrue(userService.objectSearchUser(user.getId()).getFriends().contains(user1.getId()),
                 "Друг не добавилен!");
 
@@ -190,21 +181,10 @@ class UserControllerTest {
     }
 
     @Test
-    void checkListOfPopularMovies() {
-        User user = new User("mail@mail.ru","dolore");
-        user.setBirthday(LocalDate.of(1988,07,11));
-        userService.createUser(user);
-
-        User user1 = new User("mailNd@mail.ru","qqqqqqq");
-        user.setBirthday(LocalDate.of(2000,11,11));
-        userService.createUser(user1);
-
-        User user2 = new User("mailDs@mail.ru","wwwwww");
-        user.setBirthday(LocalDate.of(1999,05,05));
-        userService.createUser(user2);
-
+    void getListOfFriendsSharedWithAnotherUserEqualsTrue() {
         userService.addFriends(user.getId(), user1.getId());
         userService.addFriends(user.getId(), user2.getId());
+
         Assertions.assertTrue(userService.objectSearchUser(user.getId()).getFriends().contains(user1.getId()),
                 "Друг не добавилен!");
 

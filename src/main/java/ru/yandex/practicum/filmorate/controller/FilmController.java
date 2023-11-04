@@ -11,8 +11,9 @@ import java.util.*;
 
 @RestController
 @Slf4j
+@RequestMapping("/films")
 public class FilmController {
-    FilmService filmService;
+    private final FilmService filmService;
 
     @Autowired
     public FilmController(FilmService filmService) {
@@ -20,13 +21,13 @@ public class FilmController {
     }
 
     //поставить лайк фильму
-    @PutMapping(value = "/films/{id}/like/{userId}")
+    @PutMapping(value = "/{id}/like/{userId}")
     public void addLikes(@PathVariable int id,@PathVariable int userId) {
         filmService.addLike(id, userId);
     }
 
     //удалить лайк
-    @DeleteMapping(value = "/films/{id}/like/{userId}")
+    @DeleteMapping(value = "/{id}/like/{userId}")
     public void deleteLikes(@PathVariable int id,@PathVariable int userId) {
         checkId(id);
         checkId(userId);
@@ -34,32 +35,32 @@ public class FilmController {
     }
 
     //вернуть список фильмов
-    @GetMapping("/films")
+    @GetMapping
     public List<Film> getListFilms() {
         return filmService.getFilms();
     }
 
     //вернуть спиок количества филмов по популярности
-    @GetMapping("/films/popular")
+    @GetMapping("/popular")
     public List<Film> getListFilmsPopular(@RequestParam(defaultValue = "10") int count) {
         return filmService.getPopularFilms(count);
     }
 
     // вернуть фильм по ID
-    @GetMapping(value = "/films/{filmId}")
+    @GetMapping(value = "/{filmId}")
     public Film getFilmById(@PathVariable int filmId) {
         checkId(filmId);
         return filmService.objectSearchFilm(filmId);
     }
 
-    @PostMapping(value = "/films")
+    @PostMapping
     public Film createFilm(@Valid @RequestBody Film film) { //создание фильма
         film = filmService.createFilm(film);
         log.info("Получили фильм {} ", film);
         return film;
     }
 
-    @PutMapping(value = "/films")
+    @PutMapping
     public Film updateFilm(@Valid @RequestBody Film film) { //обновление фильма
         checkId(film.getId());
         film = filmService.updateFilm(film);
@@ -67,12 +68,12 @@ public class FilmController {
             return film;
     }
 
-    @DeleteMapping(value = "/films/{filmId}")
+    @DeleteMapping(value = "/{filmId}")
     public void deleteFilm(@PathVariable int filmId) { //удаление фильма
         filmService.deleteFilm(filmId);
     }
 
-    public void checkId(int id) {
+    private void checkId(int id) {
         if (id <= 0) {
             throw new RuntimeException("Id не может быть меньше нуля или равен нулю!");
         } else if (filmService.objectSearchFilm(id).equals(null)) {
