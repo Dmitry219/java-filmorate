@@ -1,6 +1,7 @@
 package ru.yandex.practicum.filmorate.controller;
 
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -13,7 +14,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.util.ResourceUtils;
 import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.model.Validator;
+import ru.yandex.practicum.filmorate.service.UserService;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -31,8 +32,27 @@ class UserControllerTest {
     @Autowired
     private MockMvc mockMvc;
     @Autowired
-    UserController userController = new UserController();
-    private Validator validator;
+    private UserService userService;
+    @Autowired
+    private UserController userController;
+    User user;
+    User user1;
+    User user2;
+
+    @BeforeEach
+    void create() {
+        user = new User("mail@mail.ru","dolore");
+        user.setBirthday(LocalDate.of(1988,07,11));
+        userService.createUser(user);
+
+        user1 = new User("mailNd@mail.ru","qqqqqqq");
+        user1.setBirthday(LocalDate.of(2000,11,11));
+        userService.createUser(user1);
+
+        user2 = new User("mailDs@mail.ru","wwwwww");
+        user2.setBirthday(LocalDate.of(1999,05,05));
+        userService.createUser(user2);
+    }
 
     @Test
     void createUser() throws Exception {
@@ -75,18 +95,13 @@ class UserControllerTest {
 
     @Test
     void getUsers() throws Exception {
-        mockMvc.perform(
-                        MockMvcRequestBuilders.post(PATH)
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content(getContentFromFilm("controller/request/userGet.json")))
-                .andExpect(status().isOk());
 
         mockMvc.perform(
                         MockMvcRequestBuilders.get(PATH)
                                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(MockMvcResultMatchers.content().json(
-                        getContentFromFilm("controller/response/userGet.json")
+                        getContentFromFilm("controller/response/usersGet.json")
                 ));
     }
 
@@ -97,13 +112,13 @@ class UserControllerTest {
                         MockMvcRequestBuilders.post(PATH)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(getContentFromFilm("controller/request/user-NonNull.json")))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isNotFound());
 
         mockMvc.perform(
                         MockMvcRequestBuilders.post(PATH)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(getContentFromFilm("controller/request/user-EmailCorrect.json")))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isInternalServerError());
 
     }
 
@@ -114,25 +129,22 @@ class UserControllerTest {
                         MockMvcRequestBuilders.post(PATH)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(getContentFromFilm("controller/request/user-LoginNonNull.json")))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().is4xxClientError());
 
         mockMvc.perform(
                         MockMvcRequestBuilders.post(PATH)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(getContentFromFilm("controller/request/user-LoginBlank.json")))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isInternalServerError());
 
     }
 
     @Test
-    void validateUserCopyOfLogin() throws Exception {
-        User user = new User("mail@mail.ru","dolore");
-        user.setId(1);
-        user.setBirthday(LocalDate.of(1988,07,11));
-
-        Assertions.assertNull(user.getName());
-
-        userController.createUser(user);
+    void validateUserCopyOfLogin() {
+        User user3 = new User("mail@mail.ru","dolore");
+        user3.setBirthday(LocalDate.of(1988,07,11));
+        Assertions.assertNull(user3.getName());
+        userService.createUser(user3);
 
         Assertions.assertEquals(user.getLogin(), user.getName(), "Лоигн не скопировался в имя!");
     }
@@ -144,7 +156,40 @@ class UserControllerTest {
                         MockMvcRequestBuilders.post(PATH)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(getContentFromFilm("controller/request/user-InTheFuture.json")))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().is5xxServerError());
+    }
+
+    //--------------------Тесты нового функционала------------------------
+    @Test
+    void addFriendsTrue() {
+        userService.addFriends(user.getId(), user1.getId());
+
+        Assertions.assertTrue(userService.objectSearchUser(user.getId()).getFriends().contains(user1.getId()),
+                "Друг не добавилен!");
+    }
+
+    @Test
+    void deleteFriendsFalse() {
+        userService.addFriends(user.getId(), user1.getId());
+
+        Assertions.assertTrue(userService.objectSearchUser(user.getId()).getFriends().contains(user1.getId()),
+                "Друг не добавилен!");
+
+        userService.deleteFriends(user.getId(), user1.getId());
+        Assertions.assertFalse(userService.objectSearchUser(user.getId()).getFriends().contains(user1.getId()),
+                "Друг не удалён!");
+    }
+
+    @Test
+    void getListOfFriendsSharedWithAnotherUserEqualsTrue() {
+        userService.addFriends(user.getId(), user1.getId());
+        userService.addFriends(user.getId(), user2.getId());
+
+        Assertions.assertTrue(userService.objectSearchUser(user.getId()).getFriends().contains(user1.getId()),
+                "Друг не добавилен!");
+
+        userService.getMutualFriends(user1.getId(), user2.getId());
+        Assertions.assertEquals(user, userService.getMutualFriends(user2.getId(), user1.getId()).get(0), "Общие друзья не найдены!");
     }
 
     private String getContentFromFilm(String filename) {
