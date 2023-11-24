@@ -15,4 +15,7 @@ public interface FilmStorage {
     public Film objectSearchFilm(int filmId);
 
     public List<Film> getFilms();
+    public List<Film> getPopularFilms(int size);
+    public void addLike (int filmId, int userId);
+    public void deleteLike (int filmId, int userId);
 }

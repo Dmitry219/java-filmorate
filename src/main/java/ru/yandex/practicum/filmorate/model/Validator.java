@@ -26,6 +26,4 @@ public class Validator {
         }
         return user;
     }
-
-
 }
