@@ -22,7 +22,7 @@ public class Film {
     private Mpa mpa;
     private List<Genre> genres = new ArrayList<>();
 
-    public Map<String, Object> toMap(){
+    public Map<String, Object> toMap() {
         Map<String, Object> filmMap = new HashMap<>();
         filmMap.put("name", name);
         filmMap.put("description", description);

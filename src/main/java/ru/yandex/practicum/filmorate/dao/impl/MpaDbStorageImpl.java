@@ -14,7 +14,7 @@ public class MpaDbStorageImpl {
     private final JdbcTemplate jdbcTemplate;
 
     @Autowired
-    public MpaDbStorageImpl(JdbcTemplate jdbcTemplate){
+    public MpaDbStorageImpl(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 

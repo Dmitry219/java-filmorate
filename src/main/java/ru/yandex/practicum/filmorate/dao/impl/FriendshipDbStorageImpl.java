@@ -17,13 +17,13 @@ public class FriendshipDbStorageImpl {
     private final JdbcTemplate jdbcTemplate;
 
     @Autowired
-    public FriendshipDbStorageImpl(JdbcTemplate jdbcTemplate){
+    public FriendshipDbStorageImpl(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    public void addFriends(int userId, int friendId){
+    public void addFriends(int userId, int friendId) {
         log.info("Получили id user {} и id friend ", userId, friendId);
-        jdbcTemplate.update("INSERT INTO Friendship VALUES (?, ?)" , userId, friendId);
+        jdbcTemplate.update("INSERT INTO Friendship VALUES (?, ?)", userId, friendId);
     }
 
     public List<User> getFriendByUserId(int userId) {
@@ -43,11 +43,11 @@ public class FriendshipDbStorageImpl {
         jdbcTemplate.update("DELETE FROM Friendship WHERE id_User=? AND id_Friend=?", userId, friendId);
     }
 
-    public List<User> getListOfFriendsSharedWithAnotherUser (int id, int otherId){
+    public List<User> getListOfFriendsSharedWithAnotherUser(int id, int otherId) {
         return jdbcTemplate.query("SELECT * " +
                 "FROM Users u WHERE id IN (" +
                 "SELECT f.id_Friend FROM Friendship f " +
                 "INNER JOIN Friendship f2 ON f.id_Friend = f2.id_Friend" +
-                " WHERE f.id_User=? AND f2.id_User=?)",new BeanPropertyRowMapper<>(User.class) , id, otherId);
+                " WHERE f.id_User=? AND f2.id_User=?)",new BeanPropertyRowMapper<>(User.class), id, otherId);
     }
 }

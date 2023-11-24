@@ -9,11 +9,12 @@ import java.util.List;
 @Service
 public class GenreService {
     private final GenresDbStorageImpl genresDbStorage;
+
     public GenreService(GenresDbStorageImpl genresDbStorage) {
         this.genresDbStorage = genresDbStorage;
     }
 
-    public Genre getGenreById( int id) {
+    public Genre getGenreById(int id) {
         return genresDbStorage.objectSearchGenre(id);
     }
 

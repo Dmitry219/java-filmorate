@@ -17,7 +17,7 @@ public class UserDbStorageImpl implements UserStorage {
     private final JdbcTemplate jdbcTemplate;
 
     @Autowired
-    public UserDbStorageImpl(JdbcTemplate jdbcTemplate){
+    public UserDbStorageImpl(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 

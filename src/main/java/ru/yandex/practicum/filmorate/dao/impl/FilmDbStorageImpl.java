@@ -36,7 +36,7 @@ public class FilmDbStorageImpl implements FilmStorage {
 
         Number key = simpleJdbcInsert.executeAndReturnKey(film.toMap());
 
-       for (Genre g : film.getGenres()){
+       for (Genre g : film.getGenres()) {
            log.info("ПРОВЕРКА ЖАНРА {} ", g);
            jdbcTemplate.update("INSERT INTO Genres_Film (id_Film, id_Genre) VALUES (?, ?)",
                    key.intValue(), g.getId());
@@ -53,7 +53,7 @@ public class FilmDbStorageImpl implements FilmStorage {
                 "id_MPA=? WHERE id=?", film.getName(),film.getDescription(), film.getReleaseDate(),
                 film.getDuration(), film.getMpa().getId(), film.getId());
         jdbcTemplate.update("DELETE Genres_Film WHERE id_Film=?", film.getId());
-        for (Genre g : film.getGenres()){
+        for (Genre g : film.getGenres()) {
             log.info("ПРОВЕРКА ЖАНРА {} ", g);
             jdbcTemplate.update("INSERT INTO Genres_Film (id_Film, id_Genre) VALUES (?, ?)",
                     film.getId(), g.getId());
@@ -64,20 +64,20 @@ public class FilmDbStorageImpl implements FilmStorage {
     }
 
     @Override
-    public void addLike (int filmId, int userId){
+    public void addLike(int filmId, int userId) {
         log.info("ПРОВЕРКА filmId={} и  userId={}", filmId, userId);
         jdbcTemplate.update("INSERT INTO Likes (id_Film, id_User) VALUES (?, ?)",
                 filmId, userId);
     }
 
     @Override
-    public void deleteLike (int filmId, int userId){
+    public void deleteLike(int filmId, int userId) {
         jdbcTemplate.update("DELETE FROM Likes WHERE id_Film=? AND id_User=?",
                 filmId, userId);
     }
 
     @Override
-    public List<Film> getPopularFilms(int size){
+    public List<Film> getPopularFilms(int size) {
         return jdbcTemplate.query("SELECT f.* FROM FILMS f LEFT JOIN LIKES l ON f.ID = l.ID_FILM " +
                 "GROUP BY f.ID " +
                 "ORDER BY COUNT(l.ID_USER) DESC " +

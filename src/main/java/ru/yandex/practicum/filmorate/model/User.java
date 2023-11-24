@@ -30,7 +30,7 @@ public class User {
     private LocalDate birthday;
     private Set<Integer> friends = new HashSet<>();
 
-    public Map<String, Object> toMap(){
+    public Map<String, Object> toMap() {
         Map<String, Object> userMap = new HashMap<>();
         userMap.put("email", email);
         userMap.put("login", login);
