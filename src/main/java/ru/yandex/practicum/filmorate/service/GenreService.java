@@ -15,6 +15,7 @@ public class GenreService {
     }
 
     public Genre getGenreById(int id) {
+        checkId(id);
         return genresDbStorage.objectSearchGenre(id);
     }
 
@@ -22,10 +23,10 @@ public class GenreService {
         return genresDbStorage.getGenres();
     }
 
-    public void checkId(int id) {
+    private void checkId(int id) {
         if (id <= 0) {
             throw new RuntimeException("Id не может быть меньше нуля или равен нулю!");
-        } else if (getGenreById(id).equals(null)) {
+        } else if (genresDbStorage.objectSearchGenre(id).equals(null)) {
             throw new RuntimeException("Фильм с таким Id не сущетсует!");
         }
     }
