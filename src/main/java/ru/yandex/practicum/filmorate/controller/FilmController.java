@@ -2,6 +2,7 @@ package ru.yandex.practicum.filmorate.controller;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Validator;
@@ -14,13 +15,15 @@ import java.util.*;
 @RestController
 @Slf4j
 @RequestMapping("/films")
+@Component
 public class FilmController {
     private final FilmService filmService;
-    private Validator validator = new Validator();
+    private final Validator validator;
 
     @Autowired
-    public FilmController(FilmService filmService) {
+    public FilmController(FilmService filmService, Validator validator) {
         this.filmService = filmService;
+        this.validator = validator;
     }
 
     //поставить лайк фильму

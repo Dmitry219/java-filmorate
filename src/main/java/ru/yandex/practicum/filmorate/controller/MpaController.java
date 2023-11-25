@@ -2,6 +2,7 @@ package ru.yandex.practicum.filmorate.controller;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -15,13 +16,15 @@ import java.util.List;
 @RestController
 @Slf4j
 @RequestMapping("/mpa")
+@Component
 public class MpaController {
     private final MpaService mpaService;
-    private Validator validator = new Validator();
+    private final Validator validator;
 
     @Autowired
-    public MpaController(MpaService mpaService) {
+    public MpaController(MpaService mpaService, Validator validator) {
         this.mpaService = mpaService;
+        this.validator = validator;
     }
 
     @GetMapping(value = "/{id}")

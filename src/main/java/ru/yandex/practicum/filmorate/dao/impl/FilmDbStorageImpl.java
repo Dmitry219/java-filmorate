@@ -18,8 +18,8 @@ import java.util.List;
 @Qualifier("FilmDbStorage")
 public class FilmDbStorageImpl implements FilmStorage {
     private final JdbcTemplate jdbcTemplate;
-    private MpaDbStorageImpl mpaDbStorage;
-    private GenresDbStorageImpl genresDbStorage;
+    private final MpaDbStorageImpl mpaDbStorage;
+    private final GenresDbStorageImpl genresDbStorage;
 
     @Autowired
     public FilmDbStorageImpl(JdbcTemplate jdbcTemplate, MpaDbStorageImpl mpaDbStorage, GenresDbStorageImpl genresDbStorage) {

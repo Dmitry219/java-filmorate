@@ -21,28 +21,19 @@ public class FilmService {
 
     public void addLike(int filmId, int userId) {
         filmStorage.addLike(filmId, userId);
-        //objectSearchFilm(filmId).addLikes(userId);
         log.info("Добовление лайка фильму {} от пользователя {}", filmId, userId);
     }
 
     public void deleteLike(int filmId, int userId) {
         filmStorage.deleteLike(filmId, userId);
-        //objectSearchFilm(filmId).deleteLikes(userId);
         log.info("Удаление лайка у фильма {} от пользователя {}", filmId, userId);
     }
 
     public List<Film> getPopularFilms(int size) {
         log.info("Возвращение списка размером {} популярных фильмов", size);
-//        return filmStorage.getFilms().stream()
-//                        .sorted((film1, film2) -> {
-//                            return film2.getLikesCount() - film1.getLikesCount();
-//                        })
-//                        .limit(size)
-//                        .collect(Collectors.toList());
         return filmStorage.getPopularFilms(size);
     }
 
-    //------------------методы FilmStorage-------------------
     public Film createFilm(Film film) {
         log.info("Создание фильма {}", film);
         return filmStorage.createFilm(film);

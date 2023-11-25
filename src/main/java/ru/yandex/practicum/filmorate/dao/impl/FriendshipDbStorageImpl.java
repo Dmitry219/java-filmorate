@@ -13,7 +13,6 @@ import java.util.List;
 @Component
 @Slf4j
 public class FriendshipDbStorageImpl {
-    // методы получения всех друзей пользователя и по id , доабалвения , удаления
     private final JdbcTemplate jdbcTemplate;
 
     @Autowired
@@ -29,9 +28,7 @@ public class FriendshipDbStorageImpl {
     public List<User> getFriendByUserId(int userId) {
         log.info("ПОЛУЧИЛ в Db id user {}", userId);
         List<User> friend = new ArrayList<>();
-//         jdbcTemplate.query("SELECT * FROM Users WHERE id IN " +
-//                        "(SELECT id_Friend FROM Friendship WHERE id_User=?)", new Object[]{userId},
-//               new UserMapper());
+
          friend = jdbcTemplate.query("SELECT * FROM Users WHERE id IN " +
                          "(SELECT id_Friend FROM Friendship WHERE id_User=?)", new Object[]{userId},
                  new UserMapper());

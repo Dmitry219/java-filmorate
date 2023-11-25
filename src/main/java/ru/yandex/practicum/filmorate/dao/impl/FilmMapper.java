@@ -8,8 +8,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class FilmMapper implements RowMapper<Film> {
-    private MpaDbStorageImpl mpaDbStorage;
-    private GenresDbStorageImpl genresDbStorage;
+    private final MpaDbStorageImpl mpaDbStorage;
+    private final GenresDbStorageImpl genresDbStorage;
 
     @Autowired
     public FilmMapper(MpaDbStorageImpl mpaDbStorage, GenresDbStorageImpl genresDbStorage) {

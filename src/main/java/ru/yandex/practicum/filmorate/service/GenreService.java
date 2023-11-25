@@ -21,4 +21,12 @@ public class GenreService {
     public List<Genre> getListGenres() {
         return genresDbStorage.getGenres();
     }
+
+    public void checkId(int id) {
+        if (id <= 0) {
+            throw new RuntimeException("Id не может быть меньше нуля или равен нулю!");
+        } else if (getGenreById(id).equals(null)) {
+            throw new RuntimeException("Фильм с таким Id не сущетсует!");
+        }
+    }
 }

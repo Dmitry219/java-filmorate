@@ -24,20 +24,12 @@ public class GenreController {
 
     @GetMapping(value = "/{id}")
     public Genre getGenreById(@PathVariable int id) {
-        checkId(id);
+        genreService.checkId(id);
         return genreService.getGenreById(id);
     }
 
     @GetMapping
     public List<Genre> getListGenres() {
         return genreService.getListGenres();
-    }
-
-    private void checkId(int id) {
-        if (id <= 0) {
-            throw new RuntimeException("Id не может быть меньше нуля или равен нулю!");
-        } else if (genreService.getGenreById(id).equals(null)) {
-            throw new RuntimeException("Фильм с таким Id не сущетсует!");
-        }
     }
 }

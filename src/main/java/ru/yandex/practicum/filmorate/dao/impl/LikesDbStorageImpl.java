@@ -4,7 +4,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 public class LikesDbStorageImpl {
-    //методы добавление, удаление, у кого больше лайков , полуыения лакйка по фильму
     private final JdbcTemplate jdbcTemplate;
 
     @Autowired
