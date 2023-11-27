@@ -1,11 +1,13 @@
 package ru.yandex.practicum.filmorate.model;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 
 import java.time.LocalDate;
 
 @Slf4j
+@Component
 public class Validator {
     private static final LocalDate DATE_BORDER = LocalDate.of(1895,12,28);
 
@@ -26,6 +28,4 @@ public class Validator {
         }
         return user;
     }
-
-
 }

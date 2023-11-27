@@ -4,8 +4,7 @@ import lombok.Data;
 
 import javax.validation.constraints.*;
 import java.time.LocalDate;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 @Data
 public class Film {
@@ -20,6 +19,19 @@ public class Film {
     @Positive(message = "Продолжительность фильма не должная быть меньше нуля!")
     private int duration;
     private Set<Integer> likes = new HashSet<>();
+    private Mpa mpa;
+    private List<Genre> genres = new ArrayList<>();
+
+    public Map<String, Object> toMap() {
+        Map<String, Object> filmMap = new HashMap<>();
+        filmMap.put("name", name);
+        filmMap.put("description", description);
+        filmMap.put("release_Date", releaseDate);
+        filmMap.put("duration", duration);
+        filmMap.put("id_MPA", mpa.getId());
+
+        return filmMap;
+    }
 
     public int getLikesCount() {
         return likes.size();

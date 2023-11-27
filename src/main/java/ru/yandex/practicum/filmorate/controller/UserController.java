@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.model.Validator;
 import ru.yandex.practicum.filmorate.service.UserService;
 
 import javax.validation.Valid;
@@ -14,6 +15,7 @@ import java.util.List;
 @Slf4j
 @RequestMapping("/users")
 public class UserController {
+    private Validator validator = new Validator();
     private final UserService userService;
 
     @Autowired
@@ -69,6 +71,7 @@ public class UserController {
     //создание пользователя
     @PostMapping
     public User createUser(@Valid @RequestBody User user) {
+        validator.validate(user);
         userService.createUser(user);
         log.info("Получили пользователя {}", user);
         return user;
@@ -77,8 +80,8 @@ public class UserController {
     //обновление пользователя
     @PutMapping
     public User updateUser(@Valid @RequestBody User user) {
-
         checkId(user.getId());
+        validator.validate(user);
         userService.updateUser(user);
         log.info("Обновили пользователя {}", user);
         return user;
@@ -100,5 +103,4 @@ public class UserController {
             throw new RuntimeException("Пользователь с таким Id не сущетсует!");
         }
     }
-
 }

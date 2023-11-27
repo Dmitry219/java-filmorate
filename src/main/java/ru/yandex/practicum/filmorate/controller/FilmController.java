@@ -2,9 +2,12 @@ package ru.yandex.practicum.filmorate.controller;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.Validator;
 import ru.yandex.practicum.filmorate.service.FilmService;
+
 
 import javax.validation.Valid;
 import java.util.*;
@@ -12,12 +15,15 @@ import java.util.*;
 @RestController
 @Slf4j
 @RequestMapping("/films")
+@Component
 public class FilmController {
     private final FilmService filmService;
+    private final Validator validator;
 
     @Autowired
-    public FilmController(FilmService filmService) {
+    public FilmController(FilmService filmService, Validator validator) {
         this.filmService = filmService;
+        this.validator = validator;
     }
 
     //поставить лайк фильму
@@ -34,7 +40,7 @@ public class FilmController {
         filmService.deleteLike(id, userId);
     }
 
-    //вернуть список фильмов
+    //вернуть список фильмов +
     @GetMapping
     public List<Film> getListFilms() {
         return filmService.getFilms();
@@ -46,7 +52,7 @@ public class FilmController {
         return filmService.getPopularFilms(count);
     }
 
-    // вернуть фильм по ID
+    // вернуть фильм по ID +
     @GetMapping(value = "/{filmId}")
     public Film getFilmById(@PathVariable int filmId) {
         checkId(filmId);
@@ -55,6 +61,8 @@ public class FilmController {
 
     @PostMapping
     public Film createFilm(@Valid @RequestBody Film film) { //создание фильма
+        log.info("Получили фильм {} ", film);
+        validator.validate(film);
         film = filmService.createFilm(film);
         log.info("Получили фильм {} ", film);
         return film;
@@ -63,6 +71,7 @@ public class FilmController {
     @PutMapping
     public Film updateFilm(@Valid @RequestBody Film film) { //обновление фильма
         checkId(film.getId());
+        validator.validate(film);
         film = filmService.updateFilm(film);
         log.info("Обновили фильм {}", film);
             return film;
