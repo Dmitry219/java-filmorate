@@ -20,12 +20,15 @@ public class FilmDbStorageImpl implements FilmStorage {
     private final JdbcTemplate jdbcTemplate;
     private final MpaDbStorageImpl mpaDbStorage;
     private final GenresDbStorageImpl genresDbStorage;
+    private final DirectorDbStorageImpl directorDbStorage;
 
     @Autowired
-    public FilmDbStorageImpl(JdbcTemplate jdbcTemplate, MpaDbStorageImpl mpaDbStorage, GenresDbStorageImpl genresDbStorage) {
+    public FilmDbStorageImpl(JdbcTemplate jdbcTemplate, MpaDbStorageImpl mpaDbStorage,
+                             GenresDbStorageImpl genresDbStorage, DirectorDbStorageImpl directorDbStorage) {
         this.jdbcTemplate = jdbcTemplate;
         this.mpaDbStorage = mpaDbStorage;
         this.genresDbStorage = genresDbStorage;
+        this.directorDbStorage = directorDbStorage;
     }
 
     @Override

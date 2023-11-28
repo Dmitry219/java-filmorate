@@ -42,7 +42,7 @@ public class MpaController {
         if (id <= 0) {
             throw new RuntimeException("Id не может быть меньше нуля или равен нулю!");
         } else if (mpaService.getMpaById(id).equals(null)) {
-            throw new RuntimeException("Фильм с таким Id не сущетсует!");
+            throw new RuntimeException("Категория с таким Id не сущетсует!");
         }
     }
 }
