@@ -21,7 +21,7 @@ public class Film {
     private Set<Integer> likes = new HashSet<>();
     private Mpa mpa;
     private List<Genre> genres = new ArrayList<>();
-    private int director;
+    private List<Director> directors = new ArrayList<>();
 
     public Map<String, Object> toMap() {
         Map<String, Object> filmMap = new HashMap<>();

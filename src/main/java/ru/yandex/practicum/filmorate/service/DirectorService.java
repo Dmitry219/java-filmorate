@@ -4,8 +4,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.dao.impl.DirectorDbStorageImpl;
 import ru.yandex.practicum.filmorate.model.Director;
-import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.model.Mpa;
 
 import java.util.List;
 
@@ -23,10 +21,21 @@ public class DirectorService {
         return directorDbStorage.createDirector(director);
     }
 
+    public Director updateDirector(Director director) {
+        log.info("Обновление режисёра {}", director);
+        return directorDbStorage.updateDirector(director);
+    }
+
+    public void deleteDirector(int directorId) {
+        log.info("Удаление режисёра {}", directorId);
+        directorDbStorage.deleteDirector(directorId);
+    }
+
     //венуть режисора по id
     public Director getDirectorById(int id) {
         return directorDbStorage.objectSearchDirector(id);
     }
+
     //венуть всех режисоров
     public List<Director> getListDirectors() {
         return directorDbStorage.getDirectors();

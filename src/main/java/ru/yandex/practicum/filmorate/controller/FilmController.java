@@ -26,6 +26,12 @@ public class FilmController {
         this.validator = validator;
     }
 
+    @GetMapping("/director/{directorId}")
+    public List<Film> getSortedListFilms(@PathVariable int directorId,
+                                         @RequestParam String sortBy) {
+        return filmService.getSortedFilms(directorId, sortBy);
+    }
+
     //поставить лайк фильму
     @PutMapping(value = "/{id}/like/{userId}")
     public void addLikes(@PathVariable int id,@PathVariable int userId) {

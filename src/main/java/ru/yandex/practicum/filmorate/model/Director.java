@@ -6,6 +6,8 @@ import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import java.util.HashMap;
+import java.util.Map;
 
 @Data
 @NoArgsConstructor
@@ -15,4 +17,10 @@ public class Director {
     @NotNull
     @NotBlank
     private String name;
+
+    public Map<String, Object> toMap() {
+        Map<String, Object> directorMap = new HashMap<>();
+        directorMap.put("name", name);
+        return directorMap;
+    }
 }
