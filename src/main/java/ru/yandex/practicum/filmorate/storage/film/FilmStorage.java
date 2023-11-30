@@ -21,4 +21,6 @@ public interface FilmStorage {
     public void addLike(int filmId, int userId);
 
     public void deleteLike(int filmId, int userId);
+
+    public List<Film> getSortedFilms(int directorId, String sortBy);
 }
