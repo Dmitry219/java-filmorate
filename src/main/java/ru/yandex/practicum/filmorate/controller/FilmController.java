@@ -66,8 +66,7 @@ public class FilmController {
     }
 
     @GetMapping("/search")
-    public HashSet<Film> searchFilms(@RequestParam String query,
-                                  @RequestParam String by){
+    public HashSet<Film> searchFilms(@RequestParam String query, @RequestParam String by) {
         log.info("Получили запрос на поиск фильма {} с параметрами {}", query, by);
         return filmService.searchFilms(query, by);
     }
