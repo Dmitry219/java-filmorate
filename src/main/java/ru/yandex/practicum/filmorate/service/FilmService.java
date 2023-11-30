@@ -72,7 +72,7 @@ public class FilmService {
             findByDirector(allFilms, result, query);
         } else if (by.equals("title")) {
             findByTitle(allFilms, result, query);
-        } else if (by.equals("director,title")) {
+        } else if (by.equals("director,title") || (by.equals("title,director"))) {
             findByDirector(allFilms, result, query);
             findByTitle(allFilms, result, query);
         } else {
