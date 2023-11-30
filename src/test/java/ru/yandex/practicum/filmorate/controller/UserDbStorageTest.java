@@ -18,8 +18,8 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 @JdbcTest
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
-@ContextConfiguration(classes = {MpaDbStorageImpl.class, GenresDbStorageImpl.class, LikesDbStorageImpl.class,
-        FilmDbStorageImpl.class, UserDbStorageImpl.class, FriendshipDbStorageImpl.class})
+@ContextConfiguration(classes = {MpaDbStorageImpl.class, GenresDbStorageImpl.class, LikesDbStorageImpl.class, FilmDbStorageImpl.class,
+        UserDbStorageImpl.class, FriendshipDbStorageImpl.class, DirectorDbStorageImpl.class})
 public class UserDbStorageTest {
     private Validator validator = new Validator();
     private final UserDbStorageImpl userDbStorage;
