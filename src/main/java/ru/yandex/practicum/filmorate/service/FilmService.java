@@ -34,6 +34,12 @@ public class FilmService {
         return filmStorage.getPopularFilms(size);
     }
 
+    public List<Film> getCommonFilms(int userId, int friendId){
+        log.info("Получение общих фильмов у пользвоателей с id {} и {}", userId, friendId);
+        List<Film> films = filmStorage.getCommonFilms(userId, friendId);
+        return films;
+    }
+
     public Film createFilm(Film film) {
         log.info("Создание фильма {}", film);
         return filmStorage.createFilm(film);

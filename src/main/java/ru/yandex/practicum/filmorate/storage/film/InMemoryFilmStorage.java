@@ -63,4 +63,9 @@ public class InMemoryFilmStorage implements FilmStorage {
     private int generateId() { //Генерация id
         return ++generateId;
     }
+
+    @Override
+    public List<Film> getCommonFilms(int userId, int friendId) {
+        return null;
+    }
 }
