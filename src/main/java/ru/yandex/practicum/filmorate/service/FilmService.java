@@ -78,7 +78,9 @@ public class FilmService {
         } else {
             throw new IllegalArgumentException("Некорректное значение параметра by");
         }
-        return result;
+        List<Film> resultList = new ArrayList<>(result);
+        Collections.sort(resultList, new FilmLikesComparator());
+        return new HashSet<>(resultList);
     }
 
     private void findByDirector(List<Film> allFilms, HashSet<Film> result, String query) {
@@ -98,6 +100,13 @@ public class FilmService {
                 result.add(film);
                 break;
             }
+        }
+    }
+
+     class FilmLikesComparator implements Comparator<Film> {
+        @Override
+        public int compare(Film film1, Film film2) {
+            return -1 * Integer.compare(film2.getLikesCount(), film1.getLikesCount());
         }
     }
 }
