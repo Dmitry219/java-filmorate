@@ -17,8 +17,11 @@ public interface FilmStorage {
     public List<Film> getFilms();
 
     public List<Film> getPopularFilms(int size);
+
     public List<Film> getCommonFilms(int userId, int friendId);
+
     public void addLike(int filmId, int userId);
+
     public void deleteLike(int filmId, int userId);
 
     public List<Film> getSortedFilms(int directorId, String sortBy);
