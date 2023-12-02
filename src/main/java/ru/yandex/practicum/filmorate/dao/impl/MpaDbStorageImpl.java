@@ -10,7 +10,6 @@ import java.util.List;
 
 @Component
 public class MpaDbStorageImpl {
-    //получение жанров по айди и всех
     private final JdbcTemplate jdbcTemplate;
 
     @Autowired

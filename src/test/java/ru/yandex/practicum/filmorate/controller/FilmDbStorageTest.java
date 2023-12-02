@@ -18,10 +18,11 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 @JdbcTest
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 @ContextConfiguration(classes = {MpaDbStorageImpl.class, GenresDbStorageImpl.class, LikesDbStorageImpl.class, FilmDbStorageImpl.class,
-        UserDbStorageImpl.class, FriendshipDbStorageImpl.class})
+        UserDbStorageImpl.class, FriendshipDbStorageImpl.class, DirectorDbStorageImpl.class})
 public class FilmDbStorageTest {
     private final FilmDbStorageImpl filmDbStorage;
     private final UserDbStorageImpl userDbStorage;
+    private final DirectorDbStorageImpl directorDbStorage;
     private Validator validator = new Validator();
     Film film;
     Film film1;
@@ -37,7 +38,11 @@ public class FilmDbStorageTest {
     Genre genre3;
     Genre genre4;
     Genre genre5;
+    Director director;
+    Director director1;
+    Director director2;
     List<Genre> genres = new ArrayList<>();
+    List<Director> directors = new ArrayList<>();
 
     @BeforeEach
     void create() {
@@ -85,14 +90,31 @@ public class FilmDbStorageTest {
         genre5.setId(1);
         genre5.setName("Боевик");
 
+        director = new Director();
+        director.setId(1);
+        director.setName("Spilberg");
+
+        directorDbStorage.createDirector(director);
+
+        director1 = new Director();
+        director1.setId(1);
+        director1.setName("1 DDDD");
+
+        director2 = new Director();
+        director2.setId(1);
+        director2.setName("2 QQQQ");
+
+        genres.add(genre);
+        directors.add(director);
+
         film = new Film();
         film.setName("dima");
         film.setDuration(100);
         film.setDescription("Test data");
         film.setReleaseDate(LocalDate.of(1999, 03,25));
         film.setMpa(mpa);
-        genres.add(genre);
         film.setGenres(genres);
+        film.setDirectors(directors);
 
         filmDbStorage.createFilm(film);
 

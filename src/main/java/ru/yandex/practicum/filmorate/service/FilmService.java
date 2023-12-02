@@ -19,6 +19,10 @@ public class FilmService {
         this.filmStorage = filmStorage;
     }
 
+    public List<Film> getSortedFilms(int directorId, String sortBy) {
+       return filmStorage.getSortedFilms(directorId, sortBy);
+    }
+
     public void addLike(int filmId, int userId) {
         filmStorage.addLike(filmId, userId);
         log.info("Добовление лайка фильму {} от пользователя {}", filmId, userId);

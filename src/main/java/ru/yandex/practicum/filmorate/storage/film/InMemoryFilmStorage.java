@@ -52,12 +52,15 @@ public class InMemoryFilmStorage implements FilmStorage {
 
     @Override
     public void addLike(int filmId, int userId) {
-
     }
 
     @Override
     public void deleteLike(int filmId, int userId) {
+    }
 
+    @Override
+    public List<Film> getSortedFilms(int directorId, String sortBy) {
+        return null;
     }
 
     private int generateId() { //Генерация id
