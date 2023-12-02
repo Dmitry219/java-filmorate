@@ -106,7 +106,7 @@ public class FilmService {
      class FilmLikesComparator implements Comparator<Film> {
         @Override
         public int compare(Film film1, Film film2) {
-            return -1 * Integer.compare(film2.getLikesCount(), film1.getLikesCount());
+            return Integer.compare(film2.getLikesCount(), film1.getLikesCount());
         }
     }
 }
