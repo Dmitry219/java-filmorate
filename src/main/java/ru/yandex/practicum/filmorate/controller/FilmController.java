@@ -8,9 +8,8 @@ import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Validator;
 import ru.yandex.practicum.filmorate.service.FilmService;
 
-
 import javax.validation.Valid;
-import java.util.*;
+import java.util.List;
 
 @RestController
 @Slf4j
@@ -34,13 +33,13 @@ public class FilmController {
 
     //поставить лайк фильму
     @PutMapping(value = "/{id}/like/{userId}")
-    public void addLikes(@PathVariable int id,@PathVariable int userId) {
+    public void addLikes(@PathVariable int id, @PathVariable int userId) {
         filmService.addLike(id, userId);
     }
 
     //удалить лайк
     @DeleteMapping(value = "/{id}/like/{userId}")
-    public void deleteLikes(@PathVariable int id,@PathVariable int userId) {
+    public void deleteLikes(@PathVariable int id, @PathVariable int userId) {
         checkId(id);
         checkId(userId);
         filmService.deleteLike(id, userId);
@@ -65,6 +64,12 @@ public class FilmController {
         return filmService.objectSearchFilm(filmId);
     }
 
+    //получение общих фильмов
+    @GetMapping(value = "/common")
+    public List<Film> getCommonFilms(@RequestParam int userId, @RequestParam int friendId) {
+        return filmService.getCommonFilms(userId, friendId);
+    }
+
     @PostMapping
     public Film createFilm(@Valid @RequestBody Film film) { //создание фильма
         log.info("Получили фильм {} ", film);
@@ -80,7 +85,7 @@ public class FilmController {
         validator.validate(film);
         film = filmService.updateFilm(film);
         log.info("Обновили фильм {}", film);
-            return film;
+        return film;
     }
 
     @DeleteMapping(value = "/{filmId}")

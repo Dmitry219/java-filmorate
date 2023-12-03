@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 
-import java.util.*;
+import java.util.List;
 
 @Service
 @Slf4j
@@ -36,6 +36,12 @@ public class FilmService {
     public List<Film> getPopularFilms(int size) {
         log.info("Возвращение списка размером {} популярных фильмов", size);
         return filmStorage.getPopularFilms(size);
+    }
+
+    public List<Film> getCommonFilms(int userId, int friendId) {
+        log.info("Получение общих фильмов у пользвоателей с id {} и {}", userId, friendId);
+        List<Film> films = filmStorage.getCommonFilms(userId, friendId);
+        return films;
     }
 
     public Film createFilm(Film film) {
