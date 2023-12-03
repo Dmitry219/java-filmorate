@@ -199,7 +199,7 @@ public class FilmDbStorageImpl implements FilmStorage {
         if (id <= 0) {
             throw new RuntimeException("Id не может быть меньше нуля или равен нулю!");
         } else if (directorDbStorage.objectSearchDirector(id).equals(null)) {
-            throw new RuntimeException("Фильм с таким Id не сущетсует!");
+            throw new RuntimeException("Фильм с таким Id не существует!");
         }
     }
 }
