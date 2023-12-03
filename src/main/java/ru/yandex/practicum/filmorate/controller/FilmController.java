@@ -6,10 +6,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.service.FilmService;
-
-
 import javax.validation.Valid;
-import java.util.*;
+import java.util.List;
 
 @RestController
 @Slf4j
@@ -21,7 +19,6 @@ public class FilmController {
     @Autowired
     public FilmController(FilmService filmService) {
         this.filmService = filmService;
-
     }
 
     @GetMapping("/director/{directorId}")
@@ -32,13 +29,13 @@ public class FilmController {
 
     //поставить лайк фильму
     @PutMapping(value = "/{id}/like/{userId}")
-    public void addLikes(@PathVariable int id,@PathVariable int userId) {
+    public void addLikes(@PathVariable int id, @PathVariable int userId) {
         filmService.addLike(id, userId);
     }
 
     //удалить лайк
     @DeleteMapping(value = "/{id}/like/{userId}")
-    public void deleteLikes(@PathVariable int id,@PathVariable int userId) {
+    public void deleteLikes(@PathVariable int id, @PathVariable int userId) {
         filmService.deleteLike(id, userId);
     }
 
@@ -50,14 +47,22 @@ public class FilmController {
 
     //вернуть спиок количества филмов по популярности
     @GetMapping("/popular")
-    public List<Film> getListFilmsPopular(@RequestParam(defaultValue = "10") int count) {
-        return filmService.getPopularFilms(count);
+    public List<Film> getPopularFilmsByGenreAndYear(@RequestParam(defaultValue = "20") int count,
+                                                    @RequestParam(required = false) Integer genreId,
+                                                    @RequestParam(required = false) Integer year) {
+        return filmService.getPopularFilmsByGenreAndYear(count, genreId, year);
     }
 
     // вернуть фильм по ID +
     @GetMapping(value = "/{filmId}")
     public Film getFilmById(@PathVariable int filmId) {
         return filmService.objectSearchFilm(filmId);
+    }
+
+    //получение общих фильмов
+    @GetMapping(value = "/common")
+    public List<Film> getCommonFilms(@RequestParam int userId, @RequestParam int friendId) {
+        return filmService.getCommonFilms(userId, friendId);
     }
 
     @PostMapping
@@ -80,3 +85,4 @@ public class FilmController {
         filmService.deleteFilm(filmId);
     }
 }
+

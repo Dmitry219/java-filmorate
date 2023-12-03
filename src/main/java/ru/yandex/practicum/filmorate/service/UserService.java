@@ -21,14 +21,13 @@ public class UserService {
 
 
     @Autowired
-    public UserService(@Qualifier("UserDbStorage") UserStorage userStorage, FriendshipDbStorageImpl friendshipDbStorage) {
+    public UserService(@Qualifier("UserDbStorage") UserStorage userStorage,
+                       FriendshipDbStorageImpl friendshipDbStorage) {
         this.userStorage = userStorage;
         this.friendshipDbStorage = friendshipDbStorage;
     }
 
     public void addFriends(int userId, int friendId) {
-       //objectSearchUser(userId).addFriends(friendId);//у user появляется друг friend
-        //objectSearchUser(friendId).addFriends(userId);//у friend появляется друг user
         checkId(userId);
         checkId(friendId);
         friendshipDbStorage.addFriends(userId, friendId);
@@ -36,8 +35,6 @@ public class UserService {
     }
 
     public void deleteFriends(int userId, int friendId) {
-        //objectSearchUser(userId).deleteFriends(friendId);//у user удалить друг friend
-        //objectSearchUser(friendId).deleteFriends(userId);//у friend удалить друг user
         checkId(userId);
         checkId(friendId);
         friendshipDbStorage.deleteFriendByUserId(userId, friendId);
@@ -47,27 +44,11 @@ public class UserService {
     //получить друзей конкретонго пользовятеля
     public List<User> getOfFriendsOfASpecificUser(int userId) {
         log.info("Получение в UserService id {} пользователя", userId);
-//        List<User> friends = new ArrayList<>();
-//        for (Integer id : objectSearchUser(userId).getFriends()) {
-//            friends.add(objectSearchUser(id));
-//            log.info("Пользователь {}", objectSearchUser(id));
-//        }
-//        log.info("Получение списка друзей пользователя {}", userId);
         checkId(userId);
         return friendshipDbStorage.getFriendByUserId(userId);
     }
 
     public List<User> getMutualFriends(int userId, int friendId) {
-
-//        List<User> users = new ArrayList<>();
-//
-//        Set<Integer> friends = objectSearchUser(userId).getFriends();
-//
-//        for (Integer id : objectSearchUser(friendId).getFriends()) {
-//            if (friends.contains(id)) {
-//                users.add(objectSearchUser(id));
-//            }
-//        }
         checkId(userId);
         checkId(friendId);
         log.info("Получение списка общих друзей пользователя {} с пользователем {}", userId, friendId);

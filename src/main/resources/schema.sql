@@ -88,11 +88,3 @@ CREATE TABLE IF NOT EXISTS review_likes (
     user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     rating INTEGER CHECK (rating IN (1, -1))
 );
-
-
-
-
-
-
-
-
