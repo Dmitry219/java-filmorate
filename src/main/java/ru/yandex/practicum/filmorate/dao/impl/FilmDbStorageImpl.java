@@ -12,6 +12,7 @@ import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 
 import java.util.List;
+import java.util.Objects;
 
 @Component
 @Slf4j
@@ -118,6 +119,50 @@ public class FilmDbStorageImpl implements FilmStorage {
     }
 
     @Override
+    public List<Film> getPopularFilms(int count, Integer genreId, Integer year) {
+        if (Objects.equals(genreId, year)) {
+            final String sqlQuery = "SELECT f.* " +
+                    "FROM Films AS f " +
+                    "LEFT JOIN Likes AS l ON f.id = l.id_Film " +
+                    "GROUP BY f.id " +
+                    "ORDER BY COUNT(l.id_User) DESC " +
+                    "LIMIT ?;";
+            return jdbcTemplate.query(sqlQuery, new FilmMapper(mpaDbStorage, genresDbStorage, directorDbStorage), count);
+        } else {
+            if (genreId == null) {
+                final String sqlQuery = "SELECT f.* " +
+                        "FROM Films AS f " +
+                        "LEFT JOIN Likes AS l ON f.id = l.id_Film " +
+                        "WHERE EXTRACT(YEAR FROM CAST(f.release_Date AS date)) = ? " +
+                        "GROUP BY f.id " +
+                        "ORDER BY COUNT(l.id_User) DESC " +
+                        "LIMIT ?;";
+                return jdbcTemplate.query(sqlQuery, new FilmMapper(mpaDbStorage, genresDbStorage, directorDbStorage), year, count);
+            } else if (year == null) {
+                final String sqlQuery = "SELECT f.* " +
+                        "FROM Films AS f " +
+                        "LEFT JOIN Genres_Film AS gf ON f.id = gf.id_Film " +
+                        "LEFT JOIN Likes AS l ON f.id = l.id_Film " +
+                        "WHERE gf.id_Genre = ? " +
+                        "GROUP BY f.id " +
+                        "ORDER BY COUNT(l.id_User) DESC " +
+                        "LIMIT ?;";
+                return jdbcTemplate.query(sqlQuery, new FilmMapper(mpaDbStorage, genresDbStorage, directorDbStorage), genreId, count);
+            } else {
+                final String sqlQuery = "SELECT f.* " +
+                        "FROM Films AS f " +
+                        "LEFT JOIN Genres_Film AS gf ON f.id = gf.id_Film " +
+                        "LEFT JOIN Likes AS l ON f.id = l.id_Film " +
+                        "WHERE EXTRACT(YEAR FROM CAST(f.release_Date AS date)) = ? " +
+                        "AND gf.id_Genre = ? " +
+                        "GROUP BY f.id " +
+                        "ORDER BY COUNT(l.id_User) DESC " +
+                        "LIMIT ?;";
+                return jdbcTemplate.query(sqlQuery, new FilmMapper(mpaDbStorage, genresDbStorage, directorDbStorage), year, genreId, count);
+            }
+        }
+    }
+
     public List<Film> getCommonFilms(int userId, int friendId) {
         log.info("Получение общих фильмов от пользователей {} {}", userId, friendId);
         String sqlQuery = "SELECT f.* " +
@@ -130,14 +175,6 @@ public class FilmDbStorageImpl implements FilmStorage {
                 "ORDER BY COUNT(*) DESC;";
 
         return jdbcTemplate.query(sqlQuery, new FilmMapper(mpaDbStorage, genresDbStorage, directorDbStorage), userId, friendId);
-    }
-
-    @Override
-    public List<Film> getPopularFilms(int size) {
-        return jdbcTemplate.query("SELECT f.* FROM FILMS f LEFT JOIN LIKES l ON f.ID = l.ID_FILM " +
-                "GROUP BY f.ID " +
-                "ORDER BY COUNT(l.ID_USER) DESC " +
-                "LIMIT ?", new FilmMapper(mpaDbStorage, genresDbStorage, directorDbStorage), size);
     }
 
     @Override

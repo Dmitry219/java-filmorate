@@ -33,9 +33,9 @@ public class FilmService {
         log.info("Удаление лайка у фильма {} от пользователя {}", filmId, userId);
     }
 
-    public List<Film> getPopularFilms(int size) {
-        log.info("Возвращение списка размером {} популярных фильмов", size);
-        return filmStorage.getPopularFilms(size);
+    public List<Film> getPopularFilmsByGenreAndYear(int count, Integer genreId, Integer year) {
+        log.info("Возвращение списка популярных фильмов по жанру и годам {} {} {}", count, genreId, year);
+        return filmStorage.getPopularFilms(count, genreId, year);
     }
 
     public List<Film> getCommonFilms(int userId, int friendId) {

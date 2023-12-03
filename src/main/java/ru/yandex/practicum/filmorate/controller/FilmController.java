@@ -53,8 +53,10 @@ public class FilmController {
 
     //вернуть спиок количества филмов по популярности
     @GetMapping("/popular")
-    public List<Film> getListFilmsPopular(@RequestParam(defaultValue = "10") int count) {
-        return filmService.getPopularFilms(count);
+    public List<Film> getPopularFilmsByGenreAndYear(@RequestParam(defaultValue = "20") int count,
+                                                    @RequestParam(required = false) Integer genreId,
+                                                    @RequestParam(required = false) Integer year) {
+        return filmService.getPopularFilmsByGenreAndYear(count, genreId, year);
     }
 
     // вернуть фильм по ID +
