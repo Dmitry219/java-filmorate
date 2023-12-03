@@ -66,6 +66,12 @@ public class FilmController {
         return filmService.objectSearchFilm(filmId);
     }
 
+    //получение общих фильмов
+    @GetMapping(value = "/common")
+    public List<Film> getCommonFilms(@RequestParam int userId, @RequestParam int friendId) {
+        return filmService.getCommonFilms(userId, friendId);
+    }
+
     @PostMapping
     public Film createFilm(@Valid @RequestBody Film film) { //создание фильма
         log.info("Получили фильм {} ", film);

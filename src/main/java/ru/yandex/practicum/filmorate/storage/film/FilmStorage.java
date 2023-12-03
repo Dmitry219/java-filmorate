@@ -18,6 +18,8 @@ public interface FilmStorage {
 
     public List<Film> getPopularFilms(int count, Integer genreId, Integer year);
 
+    public List<Film> getCommonFilms(int userId, int friendId);
+
     public void addLike(int filmId, int userId);
 
     public void deleteLike(int filmId, int userId);

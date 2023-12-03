@@ -3,7 +3,6 @@ package ru.yandex.practicum.filmorate.dao.impl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Component;
@@ -41,27 +40,27 @@ public class FilmDbStorageImpl implements FilmStorage {
 
         Number key = simpleJdbcInsert.executeAndReturnKey(film.toMap());
 
-       for (Genre g : film.getGenres()) {
-           log.info("ПРОВЕРКА ЖАНРА {} ", g);
-           jdbcTemplate.update("INSERT INTO Genres_Film (id_Film, id_Genre) VALUES (?, ?)",
-                   key.intValue(), g.getId());
-       }
+        for (Genre g : film.getGenres()) {
+            log.info("ПРОВЕРКА ЖАНРА {} ", g);
+            jdbcTemplate.update("INSERT INTO Genres_Film (id_Film, id_Genre) VALUES (?, ?)",
+                    key.intValue(), g.getId());
+        }
         for (Director director : film.getDirectors()) {
             log.info("ПРОВЕРКА режисёра {} ", director);
             jdbcTemplate.update("INSERT INTO Directors_Film (id_Film, id_Director) VALUES (?, ?)",
                     key.intValue(), director.getId());
         }
-       film.setId(key.intValue());
-       film.setMpa(mpaDbStorage.objectSearchMpa(film.getMpa().getId()));
-       film.setGenres(genresDbStorage.getGenresByFilmId(key.intValue()));
-       film.setDirectors(directorDbStorage.getDirectorByFilmId(key.intValue()));
+        film.setId(key.intValue());
+        film.setMpa(mpaDbStorage.objectSearchMpa(film.getMpa().getId()));
+        film.setGenres(genresDbStorage.getGenresByFilmId(key.intValue()));
+        film.setDirectors(directorDbStorage.getDirectorByFilmId(key.intValue()));
         return film;
     }
 
     @Override
     public Film updateFilm(Film film) {
         jdbcTemplate.update("UPDATE Films SET name=?, description=?, release_Date=?, duration=?," +
-                "id_MPA=? WHERE id=?", film.getName(),film.getDescription(), film.getReleaseDate(),
+                        "id_MPA=? WHERE id=?", film.getName(), film.getDescription(), film.getReleaseDate(),
                 film.getDuration(), film.getMpa().getId(), film.getId());
         jdbcTemplate.update("DELETE Genres_Film WHERE id_Film=?", film.getId());
         for (Genre g : film.getGenres()) {
@@ -72,9 +71,9 @@ public class FilmDbStorageImpl implements FilmStorage {
         jdbcTemplate.update("DELETE Directors_Film WHERE id_Film=?", film.getId());
 
         for (Director director : film.getDirectors()) {
-                jdbcTemplate.update("INSERT INTO Directors_Film (id_Film, id_Director) VALUES (?, ?)",
-                        film.getId(), director.getId());
-            }
+            jdbcTemplate.update("INSERT INTO Directors_Film (id_Film, id_Director) VALUES (?, ?)",
+                    film.getId(), director.getId());
+        }
 
         film.setMpa(mpaDbStorage.objectSearchMpa(film.getMpa().getId()));
         film.setGenres(genresDbStorage.getGenresByFilmId(film.getId()));
@@ -89,10 +88,10 @@ public class FilmDbStorageImpl implements FilmStorage {
 
         if (sortBy.equals("year")) {
             return jdbcTemplate.query("SELECT f.* FROM FILMS f WHERE id IN" +
-                    " (SELECT df.id_film FROM DIRECTORS_FILM df WHERE id_director=?)" +
-                    " GROUP BY f.RELEASE_DATE" +
-                    " ORDER  BY f.RELEASE_DATE;",
-                    new FilmMapper(mpaDbStorage, genresDbStorage, directorDbStorage),directorId);
+                            " (SELECT df.id_film FROM DIRECTORS_FILM df WHERE id_director=?)" +
+                            " GROUP BY f.RELEASE_DATE" +
+                            " ORDER  BY f.RELEASE_DATE;",
+                    new FilmMapper(mpaDbStorage, genresDbStorage, directorDbStorage), directorId);
         } else if (sortBy.equals("likes")) {
             return jdbcTemplate.query("SELECT * " +
                             "FROM FILMS f " +
@@ -101,7 +100,7 @@ public class FilmDbStorageImpl implements FilmStorage {
                             "WHERE df.ID_DIRECTOR = ?" +
                             "GROUP BY f.ID " +
                             "ORDER BY COUNT(l.ID_USER);",
-                    new FilmMapper(mpaDbStorage, genresDbStorage, directorDbStorage),directorId);
+                    new FilmMapper(mpaDbStorage, genresDbStorage, directorDbStorage), directorId);
         }
         return null;
     }
@@ -162,6 +161,20 @@ public class FilmDbStorageImpl implements FilmStorage {
                 return jdbcTemplate.query(sqlQuery, new FilmMapper(mpaDbStorage, genresDbStorage, directorDbStorage), year, genreId, count);
             }
         }
+    }
+
+    public List<Film> getCommonFilms(int userId, int friendId) {
+        log.info("Получение общих фильмов от пользователей {} {}", userId, friendId);
+        String sqlQuery = "SELECT f.* " +
+                "FROM Films AS f, Likes AS l1, Likes AS l2 " +
+                "WHERE f.id = l1.id_Film " +
+                "AND f.id = l2.id_Film " +
+                "AND l1.id_User = ? " +
+                "AND l2.id_User = ? " +
+                "GROUP BY f.id " +
+                "ORDER BY COUNT(*) DESC;";
+
+        return jdbcTemplate.query(sqlQuery, new FilmMapper(mpaDbStorage, genresDbStorage, directorDbStorage), userId, friendId);
     }
 
     @Override
