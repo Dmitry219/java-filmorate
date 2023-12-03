@@ -8,9 +8,8 @@ import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Validator;
 import ru.yandex.practicum.filmorate.service.FilmService;
 
-
 import javax.validation.Valid;
-import java.util.*;
+import java.util.List;
 
 @RestController
 @Slf4j
@@ -34,13 +33,13 @@ public class FilmController {
 
     //поставить лайк фильму
     @PutMapping(value = "/{id}/like/{userId}")
-    public void addLikes(@PathVariable int id,@PathVariable int userId) {
+    public void addLikes(@PathVariable int id, @PathVariable int userId) {
         filmService.addLike(id, userId);
     }
 
     //удалить лайк
     @DeleteMapping(value = "/{id}/like/{userId}")
-    public void deleteLikes(@PathVariable int id,@PathVariable int userId) {
+    public void deleteLikes(@PathVariable int id, @PathVariable int userId) {
         checkId(id);
         checkId(userId);
         filmService.deleteLike(id, userId);
@@ -54,8 +53,10 @@ public class FilmController {
 
     //вернуть спиок количества филмов по популярности
     @GetMapping("/popular")
-    public List<Film> getListFilmsPopular(@RequestParam(defaultValue = "10") int count) {
-        return filmService.getPopularFilms(count);
+    public List<Film> getPopularFilmsByGenreAndYear(@RequestParam(defaultValue = "20") int count,
+                                                    @RequestParam(required = false) Integer genreId,
+                                                    @RequestParam(required = false) Integer year) {
+        return filmService.getPopularFilmsByGenreAndYear(count, genreId, year);
     }
 
     // вернуть фильм по ID +
@@ -80,7 +81,7 @@ public class FilmController {
         validator.validate(film);
         film = filmService.updateFilm(film);
         log.info("Обновили фильм {}", film);
-            return film;
+        return film;
     }
 
     @DeleteMapping(value = "/{filmId}")
