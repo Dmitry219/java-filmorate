@@ -72,6 +72,7 @@ public class ReviewService {
             throw new RuntimeException("review с id = " + id + " не найден!");
         }
     }
+
     private void checkIds(Review review) {
         if (review.getFilmId() == 0) {
             throw new ValidationException("Film Id не должен быть равен нулю!");
