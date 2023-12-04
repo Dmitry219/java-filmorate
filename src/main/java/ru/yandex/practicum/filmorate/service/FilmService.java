@@ -82,6 +82,11 @@ public class FilmService {
         return filmStorage.getFilms();
     }
 
+    public List<Film> searchFilms(String query, String by) {
+        log.info("Возвращение результатов поиска фильма {} с параметрами поиска {}", query, by);
+        return filmStorage.searchFilms(query, by);
+    }
+
     public void checkId(int id) {
         if (id <= 0) {
             throw new RuntimeException("FilmId не может быть меньше нуля или равен нулю!");
