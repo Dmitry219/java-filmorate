@@ -4,11 +4,16 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.filmorate.dao.impl.FeedDbStorageImpl;
 import ru.yandex.practicum.filmorate.dao.impl.FriendshipDbStorageImpl;
+import ru.yandex.practicum.filmorate.model.Feed;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.model.Validator;
+import ru.yandex.practicum.filmorate.model.enumFeed.EventType;
+import ru.yandex.practicum.filmorate.model.enumFeed.Operation;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,13 +23,15 @@ public class UserService {
     private final UserStorage userStorage;
     private final FriendshipDbStorageImpl friendshipDbStorage;
     private final Validator validator = new Validator();
+    private final FeedDbStorageImpl feedDbStorage;
 
 
     @Autowired
     public UserService(@Qualifier("UserDbStorage") UserStorage userStorage,
-                       FriendshipDbStorageImpl friendshipDbStorage) {
+                       FriendshipDbStorageImpl friendshipDbStorage, FeedDbStorageImpl feedDbStorage) {
         this.userStorage = userStorage;
         this.friendshipDbStorage = friendshipDbStorage;
+        this.feedDbStorage = feedDbStorage;
     }
 
     public void addFriends(int userId, int friendId) {
@@ -32,6 +39,9 @@ public class UserService {
         checkId(friendId);
         friendshipDbStorage.addFriends(userId, friendId);
         log.info("Добавление в друзья к пользователю {} добавляемый пользователь {}", userId, friendId);
+        LocalDateTime currentDateTime = LocalDateTime.now();
+        feedDbStorage.addFriendByUserEvent(currentDateTime,userId, EventType.FRIEND,
+                Operation.ADD, friendId);
     }
 
     public void deleteFriends(int userId, int friendId) {
@@ -39,6 +49,9 @@ public class UserService {
         checkId(friendId);
         friendshipDbStorage.deleteFriendByUserId(userId, friendId);
         log.info("Добавление в друзья к пользователю {} добавляемый пользователь {}", userId, friendId);
+        LocalDateTime currentDateTime = LocalDateTime.now();
+        feedDbStorage.deleteFriendByUserEvent(currentDateTime,userId, EventType.FRIEND,
+                Operation.REMOVE, friendId);
     }
 
     //получить друзей конкретонго пользовятеля
@@ -87,6 +100,11 @@ public class UserService {
     public List<User> getUsers() {
         log.info("Получение списка всех пользовтелей");
         return userStorage.getUsers();
+    }
+
+    public List<Feed> getEvent(int id) {
+        checkId(id);
+        return feedDbStorage.getEvent(id);
     }
 
     public void checkId(int id) {

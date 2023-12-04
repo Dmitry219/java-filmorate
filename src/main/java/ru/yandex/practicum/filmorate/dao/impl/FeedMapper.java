@@ -9,17 +9,12 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class FeedMapper implements RowMapper<Feed> {
-    private final FeedDbStorageImpl feedDbStorage;
-
-    public FeedMapper(FeedDbStorageImpl feedDbStorage) {
-        this.feedDbStorage = feedDbStorage;
-    }
 
     @Override
     public Feed mapRow(ResultSet rs, int rowNum) throws SQLException {
         Feed feed = new Feed();
 
-        feed.setTimesTamp(rs.getTimestamp("timestamp").toLocalDateTime());
+        feed.setTimestamp(rs.getTimestamp("timestamp").getTime());
         feed.setUserId(rs.getInt("userId"));
         feed.setEventType(EventType.valueOf(rs.getString("eventType")));
         feed.setOperation(Operation.valueOf(rs.getString("operation")));
