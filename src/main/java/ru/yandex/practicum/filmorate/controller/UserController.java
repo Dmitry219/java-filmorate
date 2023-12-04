@@ -33,13 +33,13 @@ public class UserController {
         return userService.objectSearchUser(userId);
     }
 
-    //добавление в друзья
+    //добавление в друзья !!!! Добавить в ленту событий !!!!
     @PutMapping(value = "/{id}/friends/{friendId}")
     public void addFriends(@PathVariable int id, @PathVariable int friendId) {
         userService.addFriends(id, friendId);
     }
 
-    //удаление из друзей
+    //удаление из друзей !!!! Добавить в ленту событий !!!!
     @DeleteMapping(value = "/{id}/friends/{friendId}")
     public void deleteFriends(@PathVariable int id, @PathVariable int friendId) {
         userService.deleteFriends(id, friendId);

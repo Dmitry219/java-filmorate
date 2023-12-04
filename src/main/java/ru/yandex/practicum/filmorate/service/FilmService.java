@@ -15,6 +15,7 @@ import java.util.List;
 public class FilmService {
     private final FilmStorage filmStorage;
     private final Validator validator = new Validator();
+    private FeedService feedService;
 
     @Autowired
     public FilmService(@Qualifier("FilmDbStorage") FilmStorage filmStorage) {
@@ -26,8 +27,12 @@ public class FilmService {
     }
 
     public void addLike(int filmId, int userId) {
+        checkId(filmId);
+        checkId(userId);
         filmStorage.addLike(filmId, userId);
         log.info("Добавление лайка фильму {} от пользователя {}", filmId, userId);
+        //feedService добалвение
+        feedService.addLikeByUserEvent(userId, filmId);
     }
 
     public void deleteLike(int filmId, int userId) {

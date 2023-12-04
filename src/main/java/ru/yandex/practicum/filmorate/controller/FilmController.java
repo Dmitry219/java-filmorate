@@ -27,13 +27,13 @@ public class FilmController {
         return filmService.getSortedFilms(directorId, sortBy);
     }
 
-    //поставить лайк фильму
+    //поставить лайк фильму !!!! Добавить в ленту событий !!!!
     @PutMapping(value = "/{id}/like/{userId}")
     public void addLikes(@PathVariable int id, @PathVariable int userId) {
         filmService.addLike(id, userId);
     }
 
-    //удалить лайк
+    //удалить лайк !!!! Добавить в ленту событий !!!!
     @DeleteMapping(value = "/{id}/like/{userId}")
     public void deleteLikes(@PathVariable int id, @PathVariable int userId) {
         filmService.deleteLike(id, userId);
