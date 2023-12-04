@@ -25,7 +25,7 @@ public class ErrorHandler {
     @ExceptionHandler
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ErrorResponse handleNullPointerException(final RuntimeException e) {
-        log.error("Произошла ошибка, не корректрные данные {}", e.getMessage());
+        log.error("Произошла ошибка, не корректные данные {}", e.getMessage());
         return new ErrorResponse(
                 String.format("Ошибка с полем \"%s\".", e.getMessage())
         );
