@@ -202,4 +202,36 @@ public class FilmDbStorageImpl implements FilmStorage {
             throw new RuntimeException("Фильм с таким Id не существует!");
         }
     }
+
+    public List<Film> searchFilms(String filmForSearch, String by) {
+        if (by.equalsIgnoreCase("director")) {
+            return jdbcTemplate.query(
+                        "SELECT f.*, COUNT(l.id_Film) AS like_count " +
+                            "FROM Films f " +
+                            "JOIN Directors_Film df ON f.id = df.id_film " +
+                            "JOIN Directors d ON df.id_director = d.id " +
+                            "LEFT JOIN Likes l ON f.id = l.id_Film " +
+                            "WHERE LOWER(d.name) LIKE '%' || ? || '%' " +
+                            "ORDER BY like_count DESC", new Object[]{filmForSearch.toLowerCase()}, new FilmMapper(mpaDbStorage, genresDbStorage, directorDbStorage));
+        } else if (by.equalsIgnoreCase("title")) {
+            return jdbcTemplate.query(
+                        "SELECT f.*, COUNT(l.id_film) AS like_count " +
+                            "FROM Films f " +
+                            "LEFT JOIN Likes l ON f.id = l.id_film " +
+                            "WHERE LOWER(f.name) LIKE '%' || ? || '%' " +
+                            "ORDER BY like_count DESC", new Object[]{filmForSearch.toLowerCase()}, new FilmMapper(mpaDbStorage, genresDbStorage, directorDbStorage));
+        } else if (by.equalsIgnoreCase("director,title") || by.equalsIgnoreCase("title,director")) {
+            return jdbcTemplate.query(
+                    "SELECT f.*, COUNT(l.id_Film) AS like_count " +
+                            "FROM Films f " +
+                            "LEFT JOIN Directors_Film df ON f.id = df.id_film " +
+                            "LEFT JOIN Directors d ON df.id_director = d.id " +
+                            "LEFT JOIN Likes l ON f.id = l.id_Film " +
+                            "WHERE LOWER(f.name) LIKE '%' || ? || '%' OR LOWER(d.name) LIKE '%' || ? || '%' " +
+                            "GROUP BY f.id " +
+                            "ORDER BY like_count DESC", new Object[]{filmForSearch.toLowerCase(), filmForSearch.toLowerCase()}, new FilmMapper(mpaDbStorage, genresDbStorage, directorDbStorage));
+        } else {
+            throw new IllegalArgumentException("Некорректное значение параметра by");
+        }
+    }
 }

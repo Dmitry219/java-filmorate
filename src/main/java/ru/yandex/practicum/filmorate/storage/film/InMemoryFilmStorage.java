@@ -63,6 +63,11 @@ public class InMemoryFilmStorage implements FilmStorage {
         return null;
     }
 
+    @Override
+    public List<Film> searchFilms(String query, String by) {
+        return null;
+    }
+
     private int generateId() { //Генерация id
         return ++generateId;
     }
