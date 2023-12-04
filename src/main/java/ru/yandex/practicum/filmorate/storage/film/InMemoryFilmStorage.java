@@ -46,7 +46,7 @@ public class InMemoryFilmStorage implements FilmStorage {
     }
 
     @Override
-    public List<Film> getPopularFilms(int size) {
+    public List<Film> getPopularFilms(int count, Integer genreId, Integer year) {
         return null;
     }
 
@@ -70,5 +70,10 @@ public class InMemoryFilmStorage implements FilmStorage {
 
     private int generateId() { //Генерация id
         return ++generateId;
+    }
+
+    @Override
+    public List<Film> getCommonFilms(int userId, int friendId) {
+        return null;
     }
 }

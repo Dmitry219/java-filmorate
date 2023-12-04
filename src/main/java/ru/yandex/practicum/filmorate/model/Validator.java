@@ -13,7 +13,7 @@ public class Validator {
 
     public void validate(Film film) {
         if (film == null) {
-            throw new ValidationException("film  не найде по id!");
+            throw new ValidationException("film  не найден по id!");
         } else if (film.getReleaseDate().isBefore(DATE_BORDER)) {
             log.info("У фильмы неправильная дата");
             throw new ValidationException("Старая дата релиза фильма!");
@@ -22,7 +22,7 @@ public class Validator {
 
     public User validate(User user) {
         if (user == null) {
-            throw new ValidationException("user не найде по id!");
+            throw new ValidationException("user не найден по id!");
         } else if (user.getName() == null || user.getName().isEmpty() || user.getName().isBlank()) {
             user.setName(user.getLogin());
         }
