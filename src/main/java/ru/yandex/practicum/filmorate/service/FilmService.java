@@ -78,7 +78,7 @@ public class FilmService {
     }
 
     public List<Film> searchFilms(String query, String by) {
-        log.info("Возвращение результатов поиска фильма {} с параметрами поиска {}" , query, by);
+        log.info("Возвращение результатов поиска фильма {} с параметрами поиска {}", query, by);
         return filmStorage.searchFilms(query, by);
     }
 
