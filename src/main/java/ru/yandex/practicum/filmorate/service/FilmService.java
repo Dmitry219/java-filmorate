@@ -4,10 +4,14 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.filmorate.dao.impl.FeedDbStorageImpl;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Validator;
+import ru.yandex.practicum.filmorate.model.enumFeed.EventType;
+import ru.yandex.practicum.filmorate.model.enumFeed.Operation;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -15,10 +19,12 @@ import java.util.List;
 public class FilmService {
     private final FilmStorage filmStorage;
     private final Validator validator = new Validator();
+    private FeedDbStorageImpl feedDbStorage;
 
     @Autowired
-    public FilmService(@Qualifier("FilmDbStorage") FilmStorage filmStorage) {
+    public FilmService(@Qualifier("FilmDbStorage") FilmStorage filmStorage, FeedDbStorageImpl feedDbStorage) {
         this.filmStorage = filmStorage;
+        this.feedDbStorage = feedDbStorage;
     }
 
     public List<Film> getSortedFilms(int directorId, String sortBy) {
@@ -26,8 +32,13 @@ public class FilmService {
     }
 
     public void addLike(int filmId, int userId) {
+        checkId(filmId);
+        checkId(userId);
         filmStorage.addLike(filmId, userId);
         log.info("Добавление лайка фильму {} от пользователя {}", filmId, userId);
+        LocalDateTime currentDateTime = LocalDateTime.now();
+        feedDbStorage.addLikeByUserEvent(currentDateTime,userId, EventType.LIKE,
+                Operation.ADD, filmId);
     }
 
     public void deleteLike(int filmId, int userId) {
@@ -35,6 +46,9 @@ public class FilmService {
         checkId(userId);
         filmStorage.deleteLike(filmId, userId);
         log.info("Удаление лайка у фильма {} от пользователя {}", filmId, userId);
+        LocalDateTime currentDateTime = LocalDateTime.now();
+        feedDbStorage.deleteLikeByUserEvent(currentDateTime,userId, EventType.LIKE,
+                Operation.REMOVE, filmId);
     }
 
     public List<Film> getPopularFilmsByGenreAndYear(int count, Integer genreId, Integer year) {
