@@ -10,11 +10,14 @@ import java.sql.SQLException;
 public class FilmMapper implements RowMapper<Film> {
     private final MpaDbStorageImpl mpaDbStorage;
     private final GenresDbStorageImpl genresDbStorage;
+    private final DirectorDbStorageImpl directorDbStorage;
 
     @Autowired
-    public FilmMapper(MpaDbStorageImpl mpaDbStorage, GenresDbStorageImpl genresDbStorage) {
+    public FilmMapper(MpaDbStorageImpl mpaDbStorage, GenresDbStorageImpl genresDbStorage,
+                      DirectorDbStorageImpl directorDbStorage) {
         this.mpaDbStorage = mpaDbStorage;
         this.genresDbStorage = genresDbStorage;
+        this.directorDbStorage = directorDbStorage;
     }
 
     @Override
@@ -28,6 +31,7 @@ public class FilmMapper implements RowMapper<Film> {
         film.setDuration(rs.getInt("duration"));
         film.setMpa(mpaDbStorage.objectSearchMpa(rs.getInt("id_MPA")));
         film.setGenres(genresDbStorage.getGenresByFilmId(rs.getInt("id")));
+        film.setDirectors(directorDbStorage.getDirectorByFilmId(rs.getInt("id")));
 
         return film;
     }

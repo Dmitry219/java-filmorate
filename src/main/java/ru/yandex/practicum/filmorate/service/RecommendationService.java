@@ -3,9 +3,9 @@ package ru.yandex.practicum.filmorate.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
+import ru.yandex.practicum.filmorate.dao.impl.FilmDbStorageImpl;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Like;
-import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -16,16 +16,19 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class RecommendationService {
     private final JdbcTemplate jdbcTemplate;
-    private final FilmStorage filmStorage;
+    private final FilmService filmService;
+    private final UserService userService;
+
     public List<Film> getRecommendation(Integer id) {
-        List<Like> allLikes = jdbcTemplate.query("SELECT * FROM film_like", this::rsToLike);
+        userService.checkId(id);
+        List<Like> allLikes = jdbcTemplate.query("SELECT * FROM likes", this::rsToLike);
         Map<Integer, List<Integer>> usersAndLikedFilmsIds = getMapOfUsersAndLikes(allLikes);
         List<Integer> listOfRecommendedFilmsIds = getRecommendationsList(usersAndLikedFilmsIds, id);
         if (listOfRecommendedFilmsIds.size() < 1) {
             return Collections.emptyList();
         }
         return listOfRecommendedFilmsIds.stream()
-                .map(filmStorage::getFilmById)
+                .map(filmService::objectSearchFilm)
                 .collect(Collectors.toList());
     }
 
@@ -80,8 +83,8 @@ public class RecommendationService {
     }
 
     private Like rsToLike(ResultSet rs, int rowNum) throws SQLException {
-        int filmId = rs.getInt("film_id");
-        int userId = rs.getInt("user_id");
+        int filmId = rs.getInt("id_film");
+        int userId = rs.getInt("id_user");
         return Like.builder()
                 .filmId(filmId)
                 .userId(userId)

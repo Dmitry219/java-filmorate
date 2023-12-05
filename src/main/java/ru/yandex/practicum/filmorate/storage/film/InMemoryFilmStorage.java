@@ -59,31 +59,44 @@ public class InMemoryFilmStorage implements FilmStorage {
     }
 
     @Override
-    public List<Film> getPopularFilms(int size) {
+    public List<Film> getPopularFilms(int count, Integer genreId, Integer year) {
         return null;
     }
 
     @Override
     public void addLike(int filmId, int userId) {
-
     }
 
     @Override
     public void deleteLike(int filmId, int userId) {
-
     }
 
     @Override
-    public Film getFilmById(int filmId) {
-        try {
-            return jdbcTemplate.queryForObject(format("SELECT * FROM films WHERE id=%d", filmId),
-                    new FilmMapper(mpaDbStorage, genresDbStorage));
-        } catch (EmptyResultDataAccessException e) {
-            throw new ValidationException("не найден фильм по id" + filmId);
-        }
+    public List<Film> getSortedFilms(int directorId, String sortBy) {
+        return null;
     }
+
+    @Override
+    public List<Film> searchFilms(String query, String by) {
+        return null;
+    }
+
+//    @Override
+//    public Film getFilmById(int filmId) {
+//        try {
+//            return jdbcTemplate.queryForObject(format("SELECT * FROM films WHERE id=%d", filmId),
+//                    new FilmMapper(mpaDbStorage, genresDbStorage));
+//        } catch (EmptyResultDataAccessException e) {
+//            throw new ValidationException("не найден фильм по id" + filmId);
+//        }
+//    }
 
     private int generateId() { //Генерация id
         return ++generateId;
+    }
+
+    @Override
+    public List<Film> getCommonFilms(int userId, int friendId) {
+        return null;
     }
 }
