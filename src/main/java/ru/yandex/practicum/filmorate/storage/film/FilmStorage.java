@@ -21,4 +21,5 @@ public interface FilmStorage {
     public void addLike(int filmId, int userId);
 
     public void deleteLike(int filmId, int userId);
+    Film getFilmById (int filmId);
 }

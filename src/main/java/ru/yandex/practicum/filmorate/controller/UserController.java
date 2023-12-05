@@ -3,8 +3,10 @@ package ru.yandex.practicum.filmorate.controller;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.model.Validator;
+import ru.yandex.practicum.filmorate.service.RecommendationService;
 import ru.yandex.practicum.filmorate.service.UserService;
 
 import javax.validation.Valid;
@@ -17,10 +19,12 @@ import java.util.List;
 public class UserController {
     private Validator validator = new Validator();
     private final UserService userService;
+    private final RecommendationService recommendationService;
 
     @Autowired
-    public UserController(UserService userService) {
+    public UserController(UserService userService, RecommendationService recommendationService) {
         this.userService = userService;
+        this.recommendationService = recommendationService;
     }
 
     //список всех users
@@ -62,7 +66,7 @@ public class UserController {
     //список друзей, общих с другим пользователем
     @GetMapping(value = "/{id}/friends/common/{otherId}")
     public List<User> getListOfFriendsSharedWithAnotherUser(@PathVariable int id,
-                                                             @PathVariable int otherId) {
+                                                            @PathVariable int otherId) {
         checkId(id);
         checkId(otherId);
         return userService.getMutualFriends(id, otherId);
@@ -93,6 +97,13 @@ public class UserController {
         checkId(userId);
 
         userService.deleteUser(userId);
+    }
+
+    //Возвращает рекомендации по фильмам для просмотра.
+    @GetMapping("GET /users/{id}/recommendations")
+    public List<Film> getRecommendations(@PathVariable int id) {
+        log.info("рекомендации по фильмам для пользователя id={}", id);
+        return recommendationService.getRecommendation(id);
     }
 
     //проверка id  ( > 0) и (user существует с такми id)
