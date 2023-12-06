@@ -3,7 +3,7 @@ package ru.yandex.practicum.filmorate.controller;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.filmorate.service.RecommendationService;
+import ru.yandex.practicum.filmorate.service.FilmService;
 import ru.yandex.practicum.filmorate.model.Feed;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.model.Film;
@@ -18,12 +18,12 @@ import java.util.List;
 @RequestMapping("/users")
 public class UserController {
     private final UserService userService;
-    private final RecommendationService recommendationService;
+    private final FilmService filmService;
 
     @Autowired
-    public UserController(UserService userService, RecommendationService recommendationService) {
+    public UserController(UserService userService, FilmService filmService) {
         this.userService = userService;
-        this.recommendationService = recommendationService;
+        this.filmService = filmService;
     }
 
     //вывод событий по id пользователя
@@ -95,7 +95,7 @@ public class UserController {
     @GetMapping("/{id}/recommendations")
     public List<Film> getRecommendations(@PathVariable int id) {
         log.info("рекомендации по фильмам для пользователя id={}", id);
-        return recommendationService.getRecommendation(id);
+        return filmService.getRecommendation(id);
     }
 }
 

@@ -16,8 +16,8 @@ import java.util.List;
 @AllArgsConstructor
 public class ReviewService {
     private final ReviewStorage reviewStorage;
-    private FilmService filmService;
-    private UserService userService;
+    private final FilmService filmService;
+    private final UserService userService;
     private final FeedDbStorageImpl feedDbStorage;
 
     public Review create(Review review) {

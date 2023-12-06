@@ -1,13 +1,10 @@
 package ru.yandex.practicum.filmorate.storage.film;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
-import ru.yandex.practicum.filmorate.dao.impl.FilmMapper;
 import ru.yandex.practicum.filmorate.dao.impl.GenresDbStorageImpl;
 import ru.yandex.practicum.filmorate.dao.impl.MpaDbStorageImpl;
-import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Validator;
 
@@ -81,15 +78,15 @@ public class InMemoryFilmStorage implements FilmStorage {
         return null;
     }
 
-//    @Override
-//    public Film getFilmById(int filmId) {
-//        try {
-//            return jdbcTemplate.queryForObject(format("SELECT * FROM films WHERE id=%d", filmId),
-//                    new FilmMapper(mpaDbStorage, genresDbStorage));
-//        } catch (EmptyResultDataAccessException e) {
-//            throw new ValidationException("не найден фильм по id" + filmId);
-//        }
-//    }
+    @Override
+    public Integer getMostCommonFilmsUserId(int userId) {
+        return null;
+    }
+
+    @Override
+    public List<Film> getRecommendFilms(Integer id, Integer mostCommonFilmsUserId) {
+        return null;
+    }
 
     private int generateId() { //Генерация id
         return ++generateId;
