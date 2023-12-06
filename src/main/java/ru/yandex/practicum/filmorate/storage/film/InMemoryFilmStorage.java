@@ -1,6 +1,10 @@
 package ru.yandex.practicum.filmorate.storage.film;
 
+import lombok.RequiredArgsConstructor;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
+import ru.yandex.practicum.filmorate.dao.impl.GenresDbStorageImpl;
+import ru.yandex.practicum.filmorate.dao.impl.MpaDbStorageImpl;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Validator;
 
@@ -10,7 +14,11 @@ import java.util.List;
 import java.util.Map;
 
 @Component
+@RequiredArgsConstructor
 public class InMemoryFilmStorage implements FilmStorage {
+    private final JdbcTemplate jdbcTemplate;
+    private final MpaDbStorageImpl mpaDbStorage;
+    private final GenresDbStorageImpl genresDbStorage;
     private final Validator validator = new Validator();
     private final Map<Integer, Film> saveFilms = new HashMap<>();
     private int generateId = 0;
@@ -65,6 +73,16 @@ public class InMemoryFilmStorage implements FilmStorage {
 
     @Override
     public List<Film> searchFilms(String query, String by) {
+        return null;
+    }
+
+    @Override
+    public Integer getMostCommonFilmsUserId(int userId) {
+        return null;
+    }
+
+    @Override
+    public List<Film> getRecommendFilms(Integer id, Integer mostCommonFilmsUserId) {
         return null;
     }
 
