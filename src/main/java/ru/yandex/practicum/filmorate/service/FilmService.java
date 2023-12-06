@@ -12,6 +12,7 @@ import ru.yandex.practicum.filmorate.model.enumFeed.Operation;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
 
 @Service
@@ -94,6 +95,15 @@ public class FilmService {
     public List<Film> searchFilms(String query, String by) {
         log.info("Возвращение результатов поиска фильма {} с параметрами поиска {}", query, by);
         return filmStorage.searchFilms(query, by);
+    }
+
+    public List<Film> getRecommendation(Integer id) {
+        checkId(id);
+        Integer mostCommonFilmsUserId = filmStorage.getMostCommonFilmsUserId(id);
+        if (mostCommonFilmsUserId == null) {
+            return Collections.emptyList();
+        }
+        return filmStorage.getRecommendFilms(id, mostCommonFilmsUserId);
     }
 
     public void checkId(int id) {

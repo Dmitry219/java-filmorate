@@ -3,6 +3,7 @@ package ru.yandex.practicum.filmorate.dao.impl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Component;
@@ -11,8 +12,9 @@ import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 
-import java.util.List;
-import java.util.Objects;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.*;
 
 @Component
 @Slf4j
@@ -233,5 +235,52 @@ public class FilmDbStorageImpl implements FilmStorage {
         } else {
             throw new IllegalArgumentException("Некорректное значение параметра by");
         }
+    }
+
+    public Integer getMostCommonFilmsUserId(int userId) {
+        String sql = "SELECT TOP 1 id " +
+                "FROM (SELECT l2.id_user as id, l2.id_film, l1.id_user as id_user " +
+                "FROM Films AS f, " +
+                "     Likes AS l1, " +
+                "     Likes AS l2 " +
+                "WHERE f.id = l1.id_film " +
+                "   AND f.id = l2.id_film " +
+                "   AND l1.id_user = ? " +
+                "   ORDER BY l2.id_user) " +
+                "WHERE id <> id_user " +
+                "GROUP BY id_user " +
+                "ORDER BY COUNT(id_film) DESC;";
+        try {
+            Integer otherUserId = jdbcTemplate.queryForObject(sql, this::mapRowToId, userId);
+            log.info("Получен id {} пользователя с наибольшим кол-вом фильмов с нашим id {}", otherUserId, userId);
+            return otherUserId;
+        } catch (EmptyResultDataAccessException e) {
+            return null;
+        }
+    }
+
+    public List<Film> getRecommendFilms(Integer id, Integer mostCommonFilmsUserId) {
+        String sql = "SELECT * " +
+                "FROM Films AS f, " +
+                "     Likes AS l1 " +
+                "WHERE id NOT IN " +
+                "      (SELECT f.id " +
+                "       FROM Films AS f, " +
+                "            Likes AS l2 " +
+                "       WHERE f.id = l2.id_Film " +
+                "         AND l2.id_User = ? " +
+                "       GROUP BY f.id) " +
+                "  AND f.id = l1.id_Film " +
+                "  AND l1.id_User = ?" +
+                "GROUP BY f.id";
+        List<Film> listFilms = jdbcTemplate.query(sql,
+                        new FilmMapper(mpaDbStorage, genresDbStorage, directorDbStorage),
+                        id, mostCommonFilmsUserId);
+        log.info("Получен список рекомендованных фильмов {}", listFilms);
+        return listFilms;
+    }
+
+    private Integer mapRowToId(ResultSet resultSet, int rowNum) throws SQLException {
+        return resultSet.getInt("id");
     }
 }
