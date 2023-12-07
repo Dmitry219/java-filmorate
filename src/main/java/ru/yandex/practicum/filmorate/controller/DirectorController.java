@@ -1,7 +1,7 @@
 package ru.yandex.practicum.filmorate.controller;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.model.Validator;
@@ -13,15 +13,10 @@ import java.util.List;
 @RestController
 @Slf4j
 @RequestMapping("/directors")
-@Component
+@RequiredArgsConstructor
 public class DirectorController {
     private final DirectorService directorService;
     private final Validator validator;
-
-    public DirectorController(DirectorService directorService, Validator validator) {
-        this.directorService = directorService;
-        this.validator = validator;
-    }
 
     @PostMapping
     public Director createDirector(@Valid @RequestBody Director director) { //создание режисёра
@@ -34,7 +29,6 @@ public class DirectorController {
     @PutMapping
     public Director updateDirector(@Valid @RequestBody Director director) { //обновление режисёра
         checkId(director.getId());
-        //validator.validate(director);
         director = directorService.updateDirector(director);
         log.info("Обновили режисёра {}", director);
         return director;

@@ -5,11 +5,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.dao.impl.FeedDbStorageImpl;
+import ru.yandex.practicum.filmorate.dao.impl.FilmDbStorage;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Validator;
 import ru.yandex.practicum.filmorate.model.enumFeed.EventType;
 import ru.yandex.practicum.filmorate.model.enumFeed.Operation;
-import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 
 import java.time.LocalDateTime;
 import java.util.Collections;
@@ -18,12 +18,12 @@ import java.util.List;
 @Service
 @Slf4j
 public class FilmService {
-    private final FilmStorage filmStorage;
+    private final FilmDbStorage filmStorage;
     private final Validator validator = new Validator();
-    private FeedDbStorageImpl feedDbStorage;
+    private final FeedDbStorageImpl feedDbStorage;
 
     @Autowired
-    public FilmService(@Qualifier("FilmDbStorage") FilmStorage filmStorage, FeedDbStorageImpl feedDbStorage) {
+    public FilmService(@Qualifier("FilmDbStorage") FilmDbStorage filmStorage, FeedDbStorageImpl feedDbStorage) {
         this.filmStorage = filmStorage;
         this.feedDbStorage = feedDbStorage;
     }

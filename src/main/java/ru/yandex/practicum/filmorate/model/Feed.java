@@ -6,10 +6,10 @@ import ru.yandex.practicum.filmorate.model.enumFeed.Operation;
 
 @Data
 public class Feed {
-    int eventId;
-    int userId;
-    int entityId;
-    EventType eventType;
-    Operation operation;
-    long timestamp;
+    private int eventId;
+    private int userId;
+    private int entityId;
+    private EventType eventType;
+    private Operation operation;
+    private long timestamp;
 }

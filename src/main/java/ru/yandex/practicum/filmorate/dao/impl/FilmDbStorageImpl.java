@@ -4,26 +4,28 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Component;
-import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.model.Genre;
-import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Component
 @Slf4j
 @Qualifier("FilmDbStorage")
-public class FilmDbStorageImpl implements FilmStorage {
+public class FilmDbStorageImpl implements FilmDbStorage {
     private final JdbcTemplate jdbcTemplate;
     private final MpaDbStorageImpl mpaDbStorage;
     private final GenresDbStorageImpl genresDbStorage;
     private final DirectorDbStorageImpl directorDbStorage;
+    private static final String INSERT_INTO_GENRES_FILM = "INSERT INTO Genres_Film (id_Film, id_Genre) VALUES (?, ?)";
+    private static final String INSERT_INTO_DIRECTORS_FILM = "INSERT INTO Directors_Film (id_Film, id_Director) VALUES (?, ?)";
 
     @Autowired
     public FilmDbStorageImpl(JdbcTemplate jdbcTemplate, MpaDbStorageImpl mpaDbStorage,
@@ -42,16 +44,14 @@ public class FilmDbStorageImpl implements FilmStorage {
 
         Number key = simpleJdbcInsert.executeAndReturnKey(film.toMap());
 
-        for (Genre g : film.getGenres()) {
-            log.info("ПРОВЕРКА ЖАНРА {} ", g);
-            jdbcTemplate.update("INSERT INTO Genres_Film (id_Film, id_Genre) VALUES (?, ?)",
-                    key.intValue(), g.getId());
-        }
-        for (Director director : film.getDirectors()) {
-            log.info("ПРОВЕРКА режисёра {} ", director);
-            jdbcTemplate.update("INSERT INTO Directors_Film (id_Film, id_Director) VALUES (?, ?)",
-                    key.intValue(), director.getId());
-        }
+        List<Integer> genresIds = film.getGenres().stream()
+                .map(genre -> genre.getId()).collect(Collectors.toList());
+        batchUpdate(genresIds, key.intValue(), INSERT_INTO_GENRES_FILM);
+
+        List<Integer> directorIds = film.getDirectors().stream()
+                .map(director -> director.getId()).collect(Collectors.toList());
+        batchUpdate(directorIds, key.intValue(), INSERT_INTO_DIRECTORS_FILM);
+
         film.setId(key.intValue());
         film.setMpa(mpaDbStorage.objectSearchMpa(film.getMpa().getId()));
         film.setGenres(genresDbStorage.getGenresByFilmId(key.intValue()));
@@ -59,23 +59,35 @@ public class FilmDbStorageImpl implements FilmStorage {
         return film;
     }
 
+    private <T> int[] batchUpdate(final List<T> t, int film_id, String sql) {
+        return this.jdbcTemplate.batchUpdate(sql,
+                new BatchPreparedStatementSetter() {
+                    public void setValues(PreparedStatement ps, int i) throws SQLException {
+                        ps.setInt(1, film_id);
+                        ps.setObject(2, t.get(i));
+                    }
+
+                    public int getBatchSize() {
+                        return t.size();
+                    }
+                });
+    }
+
     @Override
     public Film updateFilm(Film film) {
         jdbcTemplate.update("UPDATE Films SET name=?, description=?, release_Date=?, duration=?," +
                         "id_MPA=? WHERE id=?", film.getName(), film.getDescription(), film.getReleaseDate(),
                 film.getDuration(), film.getMpa().getId(), film.getId());
+
         jdbcTemplate.update("DELETE Genres_Film WHERE id_Film=?", film.getId());
-        for (Genre g : film.getGenres()) {
-            log.info("ПРОВЕРКА ЖАНРА {} ", g);
-            jdbcTemplate.update("INSERT INTO Genres_Film (id_Film, id_Genre) VALUES (?, ?)",
-                    film.getId(), g.getId());
-        }
+
+        List<Integer> genresIds = film.getGenres().stream().map(genre -> genre.getId()).collect(Collectors.toList());
+        batchUpdate(genresIds, film.getId(), INSERT_INTO_GENRES_FILM);
+
         jdbcTemplate.update("DELETE Directors_Film WHERE id_Film=?", film.getId());
 
-        for (Director director : film.getDirectors()) {
-            jdbcTemplate.update("INSERT INTO Directors_Film (id_Film, id_Director) VALUES (?, ?)",
-                    film.getId(), director.getId());
-        }
+        List<Integer> directorIds = film.getDirectors().stream().map(director -> director.getId()).collect(Collectors.toList());
+        batchUpdate(directorIds, film.getId(), INSERT_INTO_DIRECTORS_FILM);
 
         film.setMpa(mpaDbStorage.objectSearchMpa(film.getMpa().getId()));
         film.setGenres(genresDbStorage.getGenresByFilmId(film.getId()));
@@ -165,6 +177,7 @@ public class FilmDbStorageImpl implements FilmStorage {
         }
     }
 
+    @Override
     public List<Film> getCommonFilms(int userId, int friendId) {
         log.info("Получение общих фильмов от пользователей {} {}", userId, friendId);
         String sqlQuery = "SELECT f.* " +
@@ -205,6 +218,7 @@ public class FilmDbStorageImpl implements FilmStorage {
         }
     }
 
+    @Override
     public List<Film> searchFilms(String filmForSearch, String by) {
         if (by.equalsIgnoreCase("director")) {
             return jdbcTemplate.query(
@@ -237,6 +251,7 @@ public class FilmDbStorageImpl implements FilmStorage {
         }
     }
 
+    @Override
     public Integer getMostCommonFilmsUserId(int userId) {
         String sql = "SELECT TOP 1 id " +
                 "FROM (SELECT l2.id_user as id, l2.id_film, l1.id_user as id_user " +
@@ -259,6 +274,7 @@ public class FilmDbStorageImpl implements FilmStorage {
         }
     }
 
+    @Override
     public List<Film> getRecommendFilms(Integer id, Integer mostCommonFilmsUserId) {
         String sql = "SELECT * " +
                 "FROM Films AS f, " +
