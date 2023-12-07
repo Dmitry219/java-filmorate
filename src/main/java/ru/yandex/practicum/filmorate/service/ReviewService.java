@@ -1,17 +1,19 @@
 package ru.yandex.practicum.filmorate.service;
 
+import lombok.AllArgsConstructor;
+import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.dao.impl.FeedDbStorageImpl;
+import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Review;
 import ru.yandex.practicum.filmorate.model.enumFeed.EventType;
 import ru.yandex.practicum.filmorate.model.enumFeed.Operation;
 import ru.yandex.practicum.filmorate.storage.review.ReviewStorage;
-import ru.yandex.practicum.filmorate.exception.ValidationException;
-import lombok.AllArgsConstructor;
-import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
+@Service
 @Component
 @AllArgsConstructor
 public class ReviewService {
@@ -36,14 +38,14 @@ public class ReviewService {
         checkIds(review);
         Review updatedReview = reviewStorage.update(review);
         LocalDateTime currentDateTime = LocalDateTime.now();
-        feedDbStorage.updateReviewByUserEvent(currentDateTime,updatedReview.getUserId(), EventType.REVIEW,
+        feedDbStorage.updateReviewByUserEvent(currentDateTime, updatedReview.getUserId(), EventType.REVIEW,
                 Operation.UPDATE, updatedReview.getReviewId());
         return updatedReview;
     }
 
     public void delete(int id) {
         LocalDateTime currentDateTime = LocalDateTime.now();
-        feedDbStorage.deleteReviewByUserEvent(currentDateTime,getById(id).getUserId(), EventType.REVIEW,
+        feedDbStorage.deleteReviewByUserEvent(currentDateTime, getById(id).getUserId(), EventType.REVIEW,
                 Operation.REMOVE, id);
         checkReviewId(id);
         reviewStorage.delete(id);

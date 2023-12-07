@@ -20,7 +20,7 @@ import java.util.List;
 public class FilmService {
     private final FilmStorage filmStorage;
     private final Validator validator = new Validator();
-    private FeedDbStorageImpl feedDbStorage;
+    private final FeedDbStorageImpl feedDbStorage;
 
     @Autowired
     public FilmService(@Qualifier("FilmDbStorage") FilmStorage filmStorage, FeedDbStorageImpl feedDbStorage) {
