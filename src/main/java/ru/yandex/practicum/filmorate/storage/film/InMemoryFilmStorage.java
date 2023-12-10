@@ -1,16 +1,22 @@
 package ru.yandex.practicum.filmorate.storage.film;
 
-import org.springframework.stereotype.Component;
+import lombok.RequiredArgsConstructor;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.stereotype.Repository;
+import ru.yandex.practicum.filmorate.dao.impl.GenresDbStorageImpl;
+import ru.yandex.practicum.filmorate.dao.impl.MpaDbStorageImpl;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Validator;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
-@Component
+@Repository
+@RequiredArgsConstructor
 public class InMemoryFilmStorage implements FilmStorage {
+    private final JdbcTemplate jdbcTemplate;
+    private final MpaDbStorageImpl mpaDbStorage;
+    private final GenresDbStorageImpl genresDbStorage;
     private final Validator validator = new Validator();
     private final Map<Integer, Film> saveFilms = new HashMap<>();
     private int generateId = 0;
@@ -38,26 +44,6 @@ public class InMemoryFilmStorage implements FilmStorage {
     @Override
     public Film objectSearchFilm(int filmId) {
         return saveFilms.get(filmId);
-    }
-
-    @Override
-    public List<Film> getFilms() {
-        return new ArrayList<>(saveFilms.values());
-    }
-
-    @Override
-    public List<Film> getPopularFilms(int size) {
-        return null;
-    }
-
-    @Override
-    public void addLike(int filmId, int userId) {
-
-    }
-
-    @Override
-    public void deleteLike(int filmId, int userId) {
-
     }
 
     private int generateId() { //Генерация id
